@@ -1,0 +1,18 @@
+{
+  "desembarques": [
+    {
+      "id": "1",
+      "codigo": "DSB-001",
+      "embarcacion": "Don Lucho II",
+      "matricula": "CE-21345-CM",
+      "especie": "Anchoveta",
+      "artePesca": "Cerco",
+      "puerto": "Chimbote",
+      "destino": "Harina y aceite",
+      "toneladas": 312.4,
+      "precioTonelada": 1850,
+      "fechaDesembarque": "2026-10-01",
+      "estado": "Descargado"
+    }
+  ]
+}

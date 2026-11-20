@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="PescaControl: registro y seguimiento de desembarques pesqueros por especie, puerto, destino y estado."
+    />
+    <meta name="theme-color" content="#eef3f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#071620" media="(prefers-color-scheme: dark)" />
+    <title>PescaControl · Operaciones pesqueras y desembarque</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Saira:wdth,wght@75..100,500..700&display=swap"
+    />
+    <script>
+      // Aplica el tema guardado antes de pintar para evitar un destello del tema claro.
+      try {
+        var temaGuardado = JSON.parse(localStorage.getItem('pescacontrol:tema'))
+        var tema =
+          temaGuardado === 'dark' || temaGuardado === 'light'
+            ? temaGuardado
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+        document.documentElement.setAttribute('data-bs-theme', tema)
+      } catch (e) {
+        document.documentElement.setAttribute('data-bs-theme', 'light')
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

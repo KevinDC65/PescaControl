@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  # Sin filtro de rama: también valida PRs encadenados (base distinta de main).
+  pull_request:
+
+jobs:
+  autoria:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Revisar firmas en los commits del PR
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          if git log --format='%H%n%B' "$base..$head" | grep -iE '^(co-authored-by:|.*generated with)'; then
+            echo "::error::Hay commits con Co-authored-by o firmas automáticas. Ver regla 8 de CONTRIBUTING.md."
+            exit 1
+          fi
+          echo "Autoría correcta."
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run build
