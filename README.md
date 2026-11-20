@@ -70,6 +70,7 @@ Levanta a la vez:
 | `Ctrl+S` | Guardar el formulario |
 | `?` | Ayuda de atajos |
 
+![Inicio](docs/capturas/01-home.png)
 
 ## Problemas comunes
 
@@ -81,6 +82,11 @@ Levanta a la vez:
 | Error de sintaxis al ejecutar Vite | Actualiza Node a 20.19 o superior |
 | `db.json` aparece modificado tras probar | json-server reescribe el archivo; revisa con `git diff db.json` y restaura los 16 desembarques originales con `git checkout -- db.json` |
 
+## Entrega
+
+- Informe: [docs/PescaControl_PC3.pdf](docs/PescaControl_PC3.pdf) (fuente editable en [docs/informe/informe.html](docs/informe/informe.html)).
+- Capturas: [docs/capturas/](docs/capturas/).
+- Datos de prueba: [db.json](db.json).
 
 ## Documentación del proyecto
 

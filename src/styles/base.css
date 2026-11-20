@@ -1,1 +1,633 @@
-/* TODO #2: pendiente de implementar. */
+/* ---------- Base: tipografía, superficies del navegador y utilidades ---------- */
+
+html {
+  scrollbar-color: var(--pc-borde-fuerte) transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--pc-fuente-cifras);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background-color: rgba(var(--pc-mar-rgb), 0.24);
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--pc-mar);
+  outline-offset: 2px;
+}
+
+input,
+textarea {
+  caret-color: var(--pc-mar);
+}
+
+code {
+  font-size: 0.875em;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 0.25rem;
+  background-color: var(--pc-superficie-2);
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+.pc-cifras-tabla,
+.table td {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Código de desembarque (DSB-014) y matrícula (CE-21345-CM): letra de casco pintado,
+   semicondensada, espaciada y con cifras tabulares. */
+.pc-codigo,
+.pc-matricula {
+  font-family: var(--pc-fuente-cifras);
+  font-variation-settings: 'wdth' 88;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--pc-texto-suave);
+  white-space: nowrap;
+}
+
+.pc-matricula {
+  letter-spacing: 0.04em;
+}
+
+.pc-cifra-dato {
+  font-family: var(--pc-fuente-cifras);
+  font-variation-settings: 'wdth' 92;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pc-enlace {
+  color: var(--pc-mar);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: rgba(var(--pc-mar-rgb), 0.4);
+  transition: text-decoration-color 150ms ease;
+}
+
+.pc-enlace:hover {
+  color: var(--pc-mar-hover);
+  text-decoration-color: currentColor;
+}
+
+.pc-enlace-boton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--pc-mar);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: rgba(var(--pc-mar-rgb), 0.4);
+}
+
+.pc-enlace-boton:hover {
+  color: var(--pc-mar-hover);
+  text-decoration-color: currentColor;
+}
+
+/* Tecla de atajo */
+.pc-tecla {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  min-width: 1.375rem;
+  height: 1.375rem;
+  padding: 0 0.375rem;
+  border: 1px solid var(--pc-borde-fuerte);
+  border-bottom-width: 2px;
+  border-radius: 0.3125rem;
+  background-color: var(--pc-superficie);
+  color: var(--pc-texto-suave);
+  font-family: var(--pc-fuente);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.pc-tecla + .pc-tecla {
+  margin-left: 0.25rem;
+}
+
+/* ---------- Botones ---------- */
+
+.btn {
+  --bs-btn-font-weight: 600;
+  --bs-btn-padding-x: 1rem;
+  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-border-radius: 0.375rem;
+  --bs-btn-font-size: 0.9375rem;
+  min-height: 2.5rem;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 140ms var(--pc-ease-out);
+  user-select: none;
+}
+
+.btn-sm {
+  --bs-btn-padding-x: 0.75rem;
+  --bs-btn-padding-y: 0.3125rem;
+  --bs-btn-font-size: 0.875rem;
+  --bs-btn-border-radius: 0.3125rem;
+  min-height: 2.125rem;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--pc-mar);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.btn-primary {
+  --bs-btn-color: var(--pc-sobre-mar);
+  --bs-btn-bg: var(--pc-mar);
+  --bs-btn-border-color: var(--pc-mar);
+  --bs-btn-hover-color: var(--pc-sobre-mar);
+  --bs-btn-hover-bg: var(--pc-mar-hover);
+  --bs-btn-hover-border-color: var(--pc-mar-hover);
+  --bs-btn-active-color: var(--pc-sobre-mar);
+  --bs-btn-active-bg: var(--pc-mar-hover);
+  --bs-btn-active-border-color: var(--pc-mar-hover);
+  --bs-btn-disabled-color: var(--pc-sobre-mar);
+  --bs-btn-disabled-bg: var(--pc-mar);
+  --bs-btn-disabled-border-color: var(--pc-mar);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(var(--pc-mar-rgb), 0.3);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--pc-mar);
+  --bs-btn-border-color: rgba(var(--pc-mar-rgb), 0.45);
+  --bs-btn-hover-color: var(--pc-sobre-mar);
+  --bs-btn-hover-bg: var(--pc-mar);
+  --bs-btn-hover-border-color: var(--pc-mar);
+  --bs-btn-active-color: var(--pc-sobre-mar);
+  --bs-btn-active-bg: var(--pc-mar-hover);
+  --bs-btn-active-border-color: var(--pc-mar-hover);
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--pc-texto);
+  --bs-btn-bg: var(--pc-superficie);
+  --bs-btn-border-color: var(--pc-borde-fuerte);
+  --bs-btn-hover-color: var(--pc-texto);
+  --bs-btn-hover-bg: var(--pc-superficie-2);
+  --bs-btn-hover-border-color: var(--pc-borde-fuerte);
+  --bs-btn-active-color: var(--pc-texto);
+  --bs-btn-active-bg: var(--pc-superficie-3);
+  --bs-btn-active-border-color: var(--pc-texto-tenue);
+  --bs-btn-disabled-color: var(--pc-texto-tenue);
+  --bs-btn-disabled-bg: var(--pc-superficie);
+  --bs-btn-disabled-border-color: var(--pc-borde);
+}
+
+.btn-danger {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: var(--pc-peligro);
+  --bs-btn-border-color: var(--pc-peligro);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--pc-peligro-hover);
+  --bs-btn-hover-border-color: var(--pc-peligro-hover);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--pc-peligro-hover);
+  --bs-btn-active-border-color: var(--pc-peligro-hover);
+  --bs-btn-disabled-color: #ffffff;
+  --bs-btn-disabled-bg: var(--pc-peligro);
+  --bs-btn-disabled-border-color: var(--pc-peligro);
+}
+
+[data-bs-theme='dark'] .btn-danger {
+  --bs-btn-color: #2a0b0a;
+  --bs-btn-hover-color: #2a0b0a;
+  --bs-btn-active-color: #2a0b0a;
+  --bs-btn-disabled-color: #2a0b0a;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--pc-peligro);
+  --bs-btn-bg: var(--pc-superficie);
+  --bs-btn-border-color: var(--bs-danger-border-subtle);
+  --bs-btn-hover-color: var(--pc-peligro-texto);
+  --bs-btn-hover-bg: var(--pc-peligro-suave);
+  --bs-btn-hover-border-color: var(--pc-peligro);
+  --bs-btn-active-color: var(--pc-peligro-texto);
+  --bs-btn-active-bg: var(--pc-peligro-suave);
+  --bs-btn-active-border-color: var(--pc-peligro);
+}
+
+.btn-link {
+  --bs-btn-color: var(--pc-mar);
+  --bs-btn-hover-color: var(--pc-mar-hover);
+  font-weight: 600;
+}
+
+.btn-link.link-secondary {
+  color: var(--pc-texto-suave) !important;
+}
+
+.pc-boton-icono {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border-radius: 0.375rem;
+  color: var(--pc-texto-suave);
+  font-size: 1.0625rem;
+}
+
+.pc-boton-icono:hover {
+  color: var(--pc-texto);
+  background-color: var(--pc-superficie-2);
+}
+
+@media (pointer: coarse) {
+  .btn {
+    min-height: 2.75rem;
+  }
+}
+
+/* ---------- Formularios ---------- */
+
+.form-label,
+.pc-grupo > legend {
+  margin-bottom: 0.4375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pc-texto);
+}
+
+.form-text {
+  margin-top: 0.375rem;
+  color: var(--pc-texto-tenue);
+  font-size: 0.8125rem;
+}
+
+.form-control,
+.form-select {
+  min-height: 2.75rem;
+  padding-block: 0.5rem;
+  font-size: 1rem;
+  border-color: var(--pc-borde-fuerte);
+  border-radius: 0.375rem;
+  background-color: var(--pc-superficie);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.form-select {
+  font-size: 0.9375rem;
+}
+
+.form-control-lg {
+  min-height: 3rem;
+  font-size: 1.0625rem;
+}
+
+.form-control::placeholder {
+  color: var(--pc-texto-tenue);
+  opacity: 1;
+}
+
+.form-control:hover:not(:focus):not(:disabled),
+.form-select:hover:not(:focus):not(:disabled) {
+  border-color: var(--pc-texto-tenue);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--pc-superficie);
+  border-color: var(--pc-mar);
+  box-shadow: 0 0 0 0.1875rem rgba(var(--pc-mar-rgb), 0.18);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  box-shadow: 0 0 0 0.1875rem rgba(var(--bs-danger-rgb), 0.18);
+}
+
+.form-control.is-valid:focus,
+.form-select.is-valid:focus {
+  box-shadow: 0 0 0 0.1875rem rgba(var(--bs-success-rgb), 0.18);
+}
+
+.input-group-text {
+  background-color: var(--pc-superficie-2);
+  border-color: var(--pc-borde-fuerte);
+  color: var(--pc-texto-suave);
+  font-weight: 600;
+}
+
+.form-check-input {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0;
+  border-color: var(--pc-borde-fuerte);
+  background-color: var(--pc-superficie);
+  cursor: pointer;
+}
+
+.form-check-input:checked,
+.form-check-input:indeterminate {
+  background-color: var(--pc-mar);
+  border-color: var(--pc-mar);
+}
+
+[data-bs-theme='dark'] .form-check-input:checked[type='checkbox'] {
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%2304131c' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+.form-check-input:focus {
+  border-color: var(--pc-mar);
+  box-shadow: 0 0 0 0.1875rem rgba(var(--pc-mar-rgb), 0.2);
+}
+
+/* Íconos de validación con los tonos de la paleta. */
+:root {
+  --pc-icono-invalido: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23b4232f'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23b4232f' stroke='none'/%3e%3c/svg%3e");
+  --pc-icono-valido: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%231d6f5f' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+}
+
+[data-bs-theme='dark'] {
+  --pc-icono-invalido: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23f2877c'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23f2877c' stroke='none'/%3e%3c/svg%3e");
+  --pc-icono-valido: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%235cc6ad' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+}
+
+.form-control.is-invalid {
+  background-image: var(--pc-icono-invalido);
+}
+
+.form-control.is-valid {
+  background-image: var(--pc-icono-valido);
+}
+
+.form-select.is-invalid:not([multiple]):not([size]) {
+  --bs-form-select-bg-icon: var(--pc-icono-invalido);
+}
+
+.form-select.is-valid:not([multiple]):not([size]) {
+  --bs-form-select-bg-icon: var(--pc-icono-valido);
+}
+
+.invalid-feedback {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* Sin flechas de número: las cantidades se escriben como texto con teclado decimal. */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ---------- Tablas, insignias y alertas de Bootstrap ---------- */
+
+.table {
+  --bs-table-bg: var(--pc-superficie);
+  --bs-table-color: var(--pc-texto);
+  --bs-table-border-color: var(--pc-borde);
+  --bs-table-hover-bg: var(--pc-superficie-2);
+  --bs-table-hover-color: var(--pc-texto);
+}
+
+.badge {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.pc-badge-aviso {
+  background-color: var(--pc-boya-suave);
+  color: var(--pc-boya-texto);
+  border: 1px solid var(--pc-boya-borde);
+}
+
+.pc-badge-peligro {
+  background-color: var(--pc-peligro-suave);
+  color: var(--pc-peligro-texto);
+  border: 1px solid var(--bs-danger-border-subtle);
+}
+
+.alert {
+  --bs-alert-padding-y: 0.75rem;
+  --bs-alert-padding-x: 1rem;
+  --bs-alert-border-radius: 0.625rem;
+  font-size: 0.9375rem;
+  animation: pc-entrada-alerta 200ms var(--pc-ease-out);
+}
+
+.alert-dismissible {
+  padding-right: 3rem;
+}
+
+.alert-dismissible .btn-close {
+  padding: 1rem;
+}
+
+.pc-alerta-icono {
+  margin-top: 0.125rem;
+  font-size: 1rem;
+}
+
+.pc-alerta-texto {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.alert-link {
+  color: inherit;
+  font-weight: 700;
+}
+
+/* ---------- Carga: esqueletos y la boya de "Loading..." ---------- */
+
+.pc-esqueleto {
+  display: block;
+  max-width: 100%;
+  border-radius: 0.25rem;
+  background: linear-gradient(
+      90deg,
+      var(--pc-superficie-2) 0%,
+      var(--pc-superficie-3) 45%,
+      var(--pc-superficie-2) 90%
+    )
+    0 0 / 220% 100%;
+  animation: pc-brillo 1.4s linear infinite;
+}
+
+.pc-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1rem;
+  color: var(--pc-texto-suave);
+}
+
+.pc-loading-compacto {
+  padding: 1.25rem 1rem;
+}
+
+.pc-loading-texto {
+  font-family: var(--pc-fuente-cifras);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Boya que se mece sobre una ola mientras se espera la respuesta de la API. */
+.pc-boya-carga {
+  position: relative;
+  display: block;
+  width: 4rem;
+  height: 2.75rem;
+  overflow: hidden;
+}
+
+.pc-boya-carga svg {
+  position: absolute;
+  left: 50%;
+  bottom: 0.625rem;
+  width: 1.375rem;
+  height: 1.875rem;
+  margin-left: -0.6875rem;
+  transform-origin: 50% 90%;
+  animation: pc-mecer 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.pc-boya-carga::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0.25rem;
+  width: 200%;
+  height: 0.625rem;
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 10'%3e%3cpath d='M0 5c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3' fill='none' stroke='%2367889a' stroke-width='1.6' stroke-linecap='round'/%3e%3c/svg%3e")
+    0 0 / 2rem 0.625rem repeat-x;
+  animation: pc-oleaje 1.6s linear infinite;
+}
+
+/* ---------- Animaciones ---------- */
+
+@keyframes pc-aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pc-desaparecer {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pc-entrada-alerta {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pc-brillo {
+  to {
+    background-position: -220% 0;
+  }
+}
+
+@keyframes pc-mecer {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(6deg);
+  }
+}
+
+@keyframes pc-oleaje {
+  to {
+    transform: translateX(-2rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition-property: color, background-color, border-color, box-shadow;
+  }
+
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
+
+  .alert {
+    animation-name: pc-aparecer;
+  }
+
+  .pc-esqueleto {
+    animation: none;
+    background: var(--pc-superficie-2);
+  }
+
+  .pc-boya-carga svg {
+    animation: pc-latido 1.6s ease-in-out infinite alternate;
+  }
+
+  .pc-boya-carga::after {
+    animation: none;
+  }
+}
+
+@keyframes pc-latido {
+  from {
+    opacity: 0.35;
+  }
+}
