@@ -5,34 +5,51 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "json-server --watch db.json --port 3001",
+    "server": "tsx watch --env-file-if-exists=.env server/index.ts",
+    "seed": "tsx --env-file-if-exists=.env server/seed.ts",
     "dev:all": "concurrently -n api,web -c blue,green \"npm:server\" \"npm:dev\"",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest run",
     "lint": "oxlint",
     "typecheck": "tsc -b --noEmit",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" vite.config.ts",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" vite.config.ts"
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"server/**/*.ts\" vite.config.ts vitest.config.ts",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"server/**/*.ts\" vite.config.ts vitest.config.ts"
   },
   "dependencies": {
     "axios": "^1.21.1",
+    "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.9",
     "bootstrap-icons": "^1.13.2",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.5",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "motion": "^14.14.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-router-dom": "^7.18.5"
+    "react-router-dom": "^7.18.5",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/supertest": "^7.2.1",
     "@vitejs/plugin-react": "^6.1.2",
     "concurrently": "^10.0.7",
     "json-server": "^0.17.4",
     "oxlint": "^1.90.0",
     "prettier": "^3.10.1",
+    "supertest": "^7.3.2",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "vite": "^8.3.6"
+    "vite": "^8.3.6",
+    "vitest": "^5.1.1"
   },
   "description": "PescaControl: sistema de gestión de operaciones pesqueras y desembarque (React + Vite + Bootstrap + json-server)",
   "engines": {

@@ -65,7 +65,12 @@ interface PropsTablaDesembarques {
   onSeleccionarTodos: (marcar: boolean) => void
   onAbrir: (desembarque: Desembarque) => void
   onEditar: (desembarque: Desembarque) => void
-  onEliminar: (desembarque: Desembarque) => void
+  /**
+   * Elimina un desembarque. Solo se pasa al rol Jefe: sin esta función la tabla no muestra
+   * el botón Eliminar ni las casillas de selección (la selección solo sirve para eliminar
+   * en lote).
+   */
+  onEliminar?: (desembarque: Desembarque) => void
 }
 
 /**
@@ -86,6 +91,7 @@ function TablaDesembarques({
   onEliminar,
 }: PropsTablaDesembarques) {
   const todosRef = useRef<HTMLInputElement>(null)
+  const seleccionable = Boolean(onEliminar)
   const seleccionados = desembarques.filter((desembarque) => seleccion.has(desembarque.id)).length
   const todos = desembarques.length > 0 && seleccionados === desembarques.length
 
@@ -102,18 +108,20 @@ function TablaDesembarques({
         </caption>
         <thead>
           <tr>
-            <th scope="col" className="pc-col-check">
-              <input
-                ref={todosRef}
-                type="checkbox"
-                className="form-check-input"
-                checked={todos}
-                onChange={() => onSeleccionarTodos(!todos)}
-                aria-label={
-                  todos ? 'Quitar la selección de todos' : 'Seleccionar todos los visibles'
-                }
-              />
-            </th>
+            {seleccionable && (
+              <th scope="col" className="pc-col-check">
+                <input
+                  ref={todosRef}
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={todos}
+                  onChange={() => onSeleccionarTodos(!todos)}
+                  aria-label={
+                    todos ? 'Quitar la selección de todos' : 'Seleccionar todos los visibles'
+                  }
+                />
+              </th>
+            )}
             {COLUMNAS.map((columna) => {
               const { ordenes } = columna
               const activa = Boolean(ordenes?.includes(orden))
@@ -163,15 +171,17 @@ function TablaDesembarques({
                   }
                 }}
               >
-                <td className="pc-col-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={seleccionado}
-                    onChange={() => onSeleccionar(desembarque.id)}
-                    aria-label={`Seleccionar ${nombre}`}
-                  />
-                </td>
+                {seleccionable && (
+                  <td className="pc-col-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={seleccionado}
+                      onChange={() => onSeleccionar(desembarque.id)}
+                      aria-label={`Seleccionar ${nombre}`}
+                    />
+                  </td>
+                )}
                 <td className="pc-codigo pc-c-codigo">{desembarque.codigo}</td>
                 <td className="pc-col-embarcacion">
                   <button
@@ -234,15 +244,17 @@ function TablaDesembarques({
                     >
                       <i className="bi bi-pencil" aria-hidden="true" />
                     </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm pc-boton-fila pc-boton-fila-peligro"
-                      onClick={() => onEliminar(desembarque)}
-                      aria-label={`Eliminar ${desembarque.codigo}`}
-                      title="Eliminar"
-                    >
-                      <i className="bi bi-trash3" aria-hidden="true" />
-                    </button>
+                    {onEliminar && (
+                      <button
+                        type="button"
+                        className="btn btn-sm pc-boton-fila pc-boton-fila-peligro"
+                        onClick={() => onEliminar(desembarque)}
+                        aria-label={`Eliminar ${desembarque.codigo}`}
+                        title="Eliminar"
+                      >
+                        <i className="bi bi-trash3" aria-hidden="true" />
+                      </button>
+                    )}
                   </div>
                   <button
                     type="button"

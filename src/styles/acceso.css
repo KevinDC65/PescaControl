@@ -1,0 +1,460 @@
+/* ---------- Páginas de acceso: /ingresar y /crear-cuenta ---------- */
+
+/*
+ * Dos paneles: a la izquierda el océano nocturno con la carta náutica (siempre oscuro, como
+ * la barra lateral y la pizarra del panel) y a la derecha el formulario sobre el lienzo del
+ * tema. En móvil queda una sola columna con una franja marina arriba.
+ */
+
+.pc-acceso {
+  display: grid;
+  min-height: 100dvh;
+  background-color: var(--pc-fondo);
+}
+
+@media (min-width: 992px) {
+  .pc-acceso {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  }
+}
+
+/* Panel marino */
+.pc-marino {
+  position: relative;
+  min-height: 8.5rem;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 78% 8%, rgba(108, 195, 232, 0.16) 0%, transparent 62%),
+    linear-gradient(180deg, #03101a 0%, #082236 55%, #0c2b3e 100%);
+  color: #e3edf0;
+  isolation: isolate;
+}
+
+@media (min-width: 992px) {
+  .pc-marino {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+  }
+}
+
+.pc-marino-carta {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.pc-marino-luna {
+  position: absolute;
+  top: 11%;
+  right: 13%;
+  z-index: -1;
+  display: none;
+  width: 3rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #f4f8f9 0%, #cfdde2 70%);
+  box-shadow: 0 0 3.5rem 0.75rem rgba(227, 237, 240, 0.14);
+}
+
+.pc-marino-contenido {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.25rem var(--pc-margen-publico);
+}
+
+.pc-marino-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: flex-start;
+  min-height: 2.75rem;
+  color: #e3edf0;
+  font-family: var(--pc-fuente-cifras);
+  font-size: 1.1875rem;
+  font-weight: 650;
+  font-variation-settings: 'wdth' 90;
+  text-decoration: none;
+}
+
+.pc-marino-marca .pc-sello {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.pc-marino-marca:focus-visible {
+  outline-color: #6cc3e8;
+}
+
+.pc-marino-texto {
+  display: none;
+}
+
+.pc-marino-frase {
+  max-width: 15ch;
+  margin: 0;
+  font-family: var(--pc-fuente-cifras);
+  font-size: clamp(2.25rem, 3.6vw, 3.5rem);
+  font-weight: 650;
+  font-variation-settings: 'wdth' 82;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.pc-marino-linea {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+.pc-marino-detalle {
+  display: grid;
+  gap: 0.625rem;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: #b4c9d1;
+}
+
+.pc-marino-detalle li {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.pc-marino-detalle .bi {
+  color: #6cc3e8;
+}
+
+.pc-marino-mar {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 0;
+  height: 3.75rem;
+  pointer-events: none;
+}
+
+.pc-marino-mar .pc-ola-lejana {
+  color: #0f3a54;
+}
+
+.pc-marino-mar .pc-ola-media {
+  height: 68%;
+  color: #0a2c41;
+}
+
+.pc-marino-mar .pc-ola-cercana {
+  height: 40%;
+  color: #04131c;
+}
+
+.pc-marino-boya {
+  position: absolute;
+  right: 12%;
+  bottom: 48%;
+  width: 1.875rem;
+}
+
+@media (min-width: 992px) {
+  .pc-marino-luna {
+    display: block;
+  }
+
+  .pc-marino-contenido {
+    justify-content: space-between;
+    padding: clamp(2rem, 4vw, 3.5rem);
+    padding-bottom: 15rem;
+  }
+
+  .pc-marino-texto {
+    display: block;
+  }
+
+  .pc-marino-mar {
+    height: 13rem;
+  }
+
+  .pc-marino-boya {
+    right: auto;
+    left: 16%;
+    bottom: 60%;
+    width: 3.5rem;
+  }
+}
+
+/* Lado del formulario */
+.pc-acceso-lado {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0.75rem var(--pc-margen-publico) 1.5rem;
+  outline: none;
+}
+
+@media (min-width: 992px) {
+  .pc-acceso-lado {
+    min-height: 100dvh;
+    padding-top: 1.5rem;
+  }
+}
+
+.pc-acceso-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pc-acceso-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  color: var(--pc-texto-suave);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pc-acceso-volver:hover {
+  color: var(--pc-texto);
+}
+
+.pc-acceso-volver .bi {
+  transition: transform 160ms var(--pc-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pc-acceso-volver:hover .bi {
+    transform: translateX(-3px);
+  }
+}
+
+.pc-acceso-caja {
+  width: min(100%, 27rem);
+  margin: auto;
+  padding-block: 1.5rem 2.5rem;
+}
+
+.pc-acceso-titulo {
+  margin-bottom: 0.5rem;
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-weight: 650;
+  font-variation-settings: 'wdth' 86;
+  letter-spacing: -0.02em;
+}
+
+.pc-acceso-bajada {
+  margin-bottom: 1.75rem;
+  color: var(--pc-texto-suave);
+}
+
+.pc-acceso-form {
+  display: grid;
+  gap: 1.125rem;
+}
+
+.pc-acceso-form .form-control {
+  min-height: 3rem;
+  font-size: 1rem;
+}
+
+.pc-acceso-enviar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-height: 3.25rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.pc-acceso-enviar .bi {
+  transition: transform 160ms var(--pc-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pc-acceso-enviar:hover:not(:disabled) .bi {
+    transform: translateX(3px);
+  }
+}
+
+.pc-acceso-cambio {
+  margin: 1.75rem 0 0;
+  color: var(--pc-texto-suave);
+  text-align: center;
+}
+
+.pc-acceso-cambio a {
+  font-weight: 600;
+  text-underline-offset: 0.2em;
+}
+
+.pc-acceso-pie {
+  width: min(100%, 27rem);
+  margin: 0 auto;
+  color: var(--pc-texto-tenue);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+/* Campo de contraseña con botón de mostrar */
+.pc-grupo-contrasena .form-control {
+  padding-right: 0.75rem;
+  background-image: none;
+}
+
+.pc-ver-contrasena {
+  width: 3rem;
+  border: 1px solid var(--bs-border-color);
+  border-left: 0;
+  background-color: var(--bs-body-bg);
+  color: var(--pc-texto-suave);
+}
+
+.pc-acceso-form .pc-ver-contrasena,
+.pc-acceso-form .form-control {
+  background-color: var(--pc-superficie);
+}
+
+.pc-ver-contrasena:hover {
+  color: var(--pc-texto);
+}
+
+.pc-grupo-contrasena.is-invalid .pc-ver-contrasena {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.pc-grupo-contrasena.is-valid .pc-ver-contrasena {
+  border-color: var(--bs-form-valid-border-color);
+}
+
+.pc-grupo-contrasena .form-control:focus + .pc-ver-contrasena {
+  border-color: var(--pc-mar);
+}
+
+/* Medidor de fortaleza */
+.pc-fortaleza {
+  margin-top: 0.625rem;
+}
+
+.pc-fortaleza-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pc-fortaleza-tramos {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.pc-fortaleza-tramos span {
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background-color: var(--pc-superficie-3);
+}
+
+.pc-fortaleza-tramos span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--nivel, var(--pc-peligro));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms var(--pc-ease-out);
+}
+
+.pc-fortaleza-tramos span[data-lleno='true']::after {
+  transform: none;
+}
+
+.pc-fortaleza[data-nivel='1'] {
+  --nivel: var(--pc-peligro);
+}
+
+.pc-fortaleza[data-nivel='2'] {
+  --nivel: var(--pc-info);
+}
+
+.pc-fortaleza[data-nivel='3'],
+.pc-fortaleza[data-nivel='4'] {
+  --nivel: var(--pc-exito);
+}
+
+.pc-fortaleza-texto {
+  min-width: 5.5rem;
+  color: var(--pc-texto-tenue);
+  font-family: var(--pc-fuente-cifras);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.pc-fortaleza[data-nivel='1'] .pc-fortaleza-texto {
+  color: var(--pc-peligro-texto);
+}
+
+.pc-fortaleza[data-nivel='3'] .pc-fortaleza-texto,
+.pc-fortaleza[data-nivel='4'] .pc-fortaleza-texto {
+  color: var(--pc-exito);
+}
+
+.pc-requisitos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pc-requisitos li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--pc-texto-tenue);
+  font-size: 0.8125rem;
+}
+
+.pc-requisitos li[data-cumple='true'] {
+  color: var(--pc-exito);
+}
+
+/* Esperas de sesión y de carga de páginas */
+.pc-espera-sesion {
+  display: grid;
+  min-height: 70dvh;
+  place-items: center;
+}
+
+/* 404 sin sesión */
+.pc-404-publica {
+  display: grid;
+  min-height: 100dvh;
+  padding: 2rem var(--pc-margen-publico);
+  place-items: center;
+  outline: none;
+}
+
+/* Sin barra inferior en las páginas públicas: los toasts bajan al borde. */
+@media (max-width: 991.98px) {
+  body:has(.pc-acceso) .pc-toasts,
+  body:has(.pc-publico) .pc-toasts,
+  body:has(.pc-404-publica) .pc-toasts {
+    bottom: calc(env(safe-area-inset-bottom) + 0.75rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-fortaleza-tramos span::after {
+    transition: none;
+  }
+}

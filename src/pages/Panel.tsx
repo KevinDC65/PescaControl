@@ -42,7 +42,7 @@ const cifraSinUnidad = (texto: string, unidad: string) =>
 
 const RUTA_ATENCION = '/lista?atencion=1'
 
-function Home() {
+function Panel() {
   const { usuario, config } = useAppContext()
   const [desembarques, setDesembarques] = useState<Desembarque[]>([])
   const [cargando, setCargando] = useState(true)
@@ -74,7 +74,8 @@ function Home() {
 
   const resumen = useMemo(() => resumirOperaciones(desembarques), [desembarques])
 
-  const saludo = usuario ? `${saludoDelMomento()}, ${usuario.nombre}` : saludoDelMomento()
+  const nombreCorto = usuario?.nombre.trim().split(/\s+/)[0] ?? ''
+  const saludo = nombreCorto ? `${saludoDelMomento()}, ${nombreCorto}` : saludoDelMomento()
   const atencion = resumen.atencion.length
   const especieLider = [...resumen.porEspecie].sort((a, b) => b.toneladas - a.toneladas)[0]
 
@@ -376,4 +377,4 @@ function EsqueletoInicio() {
   )
 }
 
-export default Home
+export default Panel

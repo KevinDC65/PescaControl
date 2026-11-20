@@ -7,11 +7,13 @@ import Drawer from '../components/Drawer.tsx'
 import Esqueleto from '../components/Esqueleto.tsx'
 import EstadoVacio from '../components/EstadoVacio.tsx'
 import InsigniaEspecie from '../components/InsigniaEspecie.tsx'
+import Permiso from '../components/Permiso.tsx'
 import Loading from '../components/Loading.tsx'
 import TablaDesembarques from '../components/TablaDesembarques.tsx'
 import TarjetaDesembarque from '../components/TarjetaDesembarque.tsx'
 import { Tecla } from '../components/Tecla.tsx'
 import { ESPECIES, ESTADOS, PUERTOS, perteneceACatalogo } from '../constants/desembarques.ts'
+import { useAppContext } from '../context/AppContext.tsx'
 import { useLocalStorage } from '../hooks/useLocalStorage.ts'
 import { useToast } from '../hooks/useToast.ts'
 import { getAll, remove } from '../services/apiService.ts'
@@ -111,6 +113,9 @@ const plural = (cantidad: number, singular: string, varias: string) =>
 
 function Lista() {
   const toast = useToast()
+  // Solo el Jefe elimina (una fila, desde el detalle o en lote); el servidor responde 403
+  // a cualquier otro rol, así que la interfaz ni siquiera ofrece la acción.
+  const { esJefe } = useAppContext()
   const navigate = useNavigate()
   const location = useLocation()
   const [parametros, setParametros] = useSearchParams()
@@ -619,7 +624,7 @@ function Lista() {
             onSeleccionarTodos={seleccionarTodos}
             onAbrir={abrirDetalle}
             onEditar={editar}
-            onEliminar={(desembarque) => pedirEliminacion([desembarque])}
+            onEliminar={esJefe ? (desembarque) => pedirEliminacion([desembarque]) : undefined}
           />
         ) : (
           <ul className="pc-galeria">
@@ -629,7 +634,7 @@ function Lista() {
                   desembarque={desembarque}
                   indice={indice}
                   onAbrir={() => abrirDetalle(desembarque)}
-                  seleccionable
+                  seleccionable={esJefe}
                   seleccionada={seleccion.has(desembarque.id)}
                   onSeleccionar={() => alternarSeleccion(desembarque.id)}
                 />
@@ -664,7 +669,7 @@ function Lista() {
 
       {contenido()}
 
-      {seleccionados.length > 0 && (
+      {esJefe && seleccionados.length > 0 && (
         <div className="pc-barra-lote" role="region" aria-label="Acciones de la selección">
           <span className="pc-barra-lote-cuenta">
             <strong>{seleccionados.length}</strong>{' '}
@@ -695,14 +700,16 @@ function Lista() {
         pie={
           detalle && (
             <>
-              <button
-                type="button"
-                className="btn btn-outline-danger d-inline-flex align-items-center gap-2"
-                onClick={() => pedirEliminacion([detalle])}
-              >
-                <i className="bi bi-trash3" aria-hidden="true" />
-                Eliminar
-              </button>
+              <Permiso rol="jefe">
+                <button
+                  type="button"
+                  className="btn btn-outline-danger d-inline-flex align-items-center gap-2"
+                  onClick={() => pedirEliminacion([detalle])}
+                >
+                  <i className="bi bi-trash3" aria-hidden="true" />
+                  Eliminar
+                </button>
+              </Permiso>
               <Link
                 to={`/registro/${detalle.id}`}
                 className="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 flex-grow-1"

@@ -25,3 +25,6 @@ dist-ssr
 
 # Entorno
 .env
+
+# Archivos temporales del almacén de usuarios (escritura atómica)
+server/data/*.tmp

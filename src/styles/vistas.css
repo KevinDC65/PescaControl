@@ -2222,3 +2222,154 @@
     }
   }
 }
+
+/* ---------- Usuarios (solo Jefe) ---------- */
+
+.pc-usuarios .table {
+  min-width: 0;
+}
+
+.pc-u-nombre {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 400;
+}
+
+.pc-u-nombre-texto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.pc-u-tu {
+  padding: 0.0625rem 0.4375rem;
+  border-radius: 999px;
+  background-color: var(--pc-mar);
+  color: var(--pc-sobre-mar);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.pc-u-correo {
+  color: var(--pc-texto-suave);
+  overflow-wrap: anywhere;
+}
+
+.pc-u-correo-movil {
+  display: none;
+  color: var(--pc-texto-suave);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.pc-u-select {
+  width: 8.5rem;
+  min-height: 2.25rem;
+}
+
+.pc-u-interruptor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0;
+  white-space: nowrap;
+}
+
+.pc-u-interruptor .form-check-input {
+  width: 2.5rem;
+  height: 1.375rem;
+  margin: 0;
+  float: none;
+  cursor: pointer;
+}
+
+.pc-u-interruptor .form-check-input:disabled {
+  cursor: not-allowed;
+}
+
+.pc-u-interruptor .form-check-label {
+  min-width: 6rem;
+  color: var(--pc-texto-suave);
+  font-size: 0.875rem;
+}
+
+.pc-usuarios tr[data-inactivo='true'] .pc-u-nombre,
+.pc-usuarios tr[data-inactivo='true'] .pc-u-correo {
+  opacity: 0.62;
+}
+
+.pc-usuarios-nota {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  color: var(--pc-texto-suave);
+  font-size: 0.875rem;
+}
+
+.pc-usuarios-nota .bi {
+  color: var(--pc-mar);
+}
+
+.pc-usuarios-esqueleto {
+  margin-top: 1rem;
+  padding-block: 0.25rem;
+}
+
+.pc-usuarios-esqueleto-fila {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 0.875rem;
+  border-bottom: 1px solid var(--pc-borde);
+}
+
+.pc-usuarios-esqueleto-fila:last-child {
+  border-bottom: 0;
+}
+
+@media (max-width: 767.98px) {
+  .pc-usuarios .pc-u-correo,
+  .pc-usuarios .pc-u-alta {
+    display: none;
+  }
+
+  .pc-u-correo-movil {
+    display: block;
+  }
+
+  .pc-u-select {
+    width: 7.5rem;
+  }
+
+  .pc-u-interruptor .form-check-label {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 479.98px) {
+  .pc-usuarios thead {
+    display: none;
+  }
+
+  .pc-usuarios tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 0.75rem;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--pc-borde);
+  }
+
+  .pc-usuarios tr > * {
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  .pc-usuarios .pc-u-nombre {
+    grid-column: 1 / -1;
+  }
+}

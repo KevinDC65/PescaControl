@@ -18,7 +18,10 @@
  *   styles/shell.css      Barra lateral, cabecera, barra inferior móvil y pie.
  *   styles/capas.css      Modales, panel lateral, paleta de comandos y toasts.
  *   styles/especies.css   Color de cada especie, insignias y textura marina de las tarjetas.
- *   styles/vistas.css     Inicio, Desembarques, Registro y 404.
+ *   styles/vistas.css     Panel, Desembarques, Registro, Usuarios y 404.
+ *   styles/escena.css     Escena marina compartida: oleaje, boya, embarcación y carta.
+ *   styles/acceso.css     Páginas de acceso (/ingresar y /crear-cuenta).
+ *   styles/publico.css    Página principal pública (/).
  */
 
 @import './styles/base.css';
@@ -26,6 +29,9 @@
 @import './styles/capas.css';
 @import './styles/especies.css';
 @import './styles/vistas.css';
+@import './styles/escena.css';
+@import './styles/acceso.css';
+@import './styles/publico.css';
 
 :root,
 [data-bs-theme='light'] {
@@ -64,6 +70,25 @@
   --pc-arena: #ece3cf;
   --pc-arena-borde: #d6c7a3;
   --pc-arena-texto: #6b5a33;
+
+  /* Escena de la página principal: el muelle al amanecer. */
+  --pc-escena-cielo-alto: #c4d9e2;
+  --pc-escena-cielo-medio: #e2eaea;
+  --pc-escena-cielo-bajo: #f1e2c4;
+  --pc-escena-astro: #f7dca8;
+  --pc-escena-astro-halo: rgba(247, 210, 150, 0.55);
+  --pc-escena-costa-lejos: #a9bcc2;
+  --pc-escena-costa-cerca: #8aa3ad;
+  --pc-escena-mar-1: #86adbe;
+  --pc-escena-mar-2: #4a87a3;
+  --pc-escena-mar-3: #18628a;
+  --pc-escena-mar-4: #0c2b3e;
+  --pc-escena-silueta: #23404f;
+  --pc-escena-ventana: #f1e2c4;
+  --pc-escena-texto: #0f2533;
+  --pc-escena-texto-suave: #2f4b59;
+  --pc-alto-barra-publica: 4.25rem;
+  --pc-margen-publico: clamp(1rem, 4vw, 3rem);
 
   --pc-riel: #0a1e2c;
   --pc-riel-hover: rgba(255, 255, 255, 0.07);
@@ -187,6 +212,23 @@
   --pc-arena: #2a2a20;
   --pc-arena-borde: #4a4632;
   --pc-arena-texto: #d6c99f;
+
+  /* Escena de la página principal: el muelle de noche. */
+  --pc-escena-cielo-alto: #020b12;
+  --pc-escena-cielo-medio: #061827;
+  --pc-escena-cielo-bajo: #0e3048;
+  --pc-escena-astro: #e3edf0;
+  --pc-escena-astro-halo: rgba(227, 237, 240, 0.18);
+  --pc-escena-costa-lejos: #0a2232;
+  --pc-escena-costa-cerca: #061a26;
+  --pc-escena-mar-1: #0f3a52;
+  --pc-escena-mar-2: #0b2f45;
+  --pc-escena-mar-3: #082436;
+  --pc-escena-mar-4: #04131c;
+  --pc-escena-silueta: #01080d;
+  --pc-escena-ventana: #ffd89a;
+  --pc-escena-texto: #e9f1f3;
+  --pc-escena-texto-suave: #b4c9d1;
 
   --pc-riel: #04111a;
   --pc-riel-texto: #e3edf0;

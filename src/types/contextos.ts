@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { NavigateOptions, To } from 'react-router-dom'
-import type { UsuarioSimulado } from './usuario.ts'
+import type { CredencialesIngreso, DatosRegistro, Rol, Usuario } from './usuario.ts'
 
 /** Tema de Bootstrap (atributo `data-bs-theme`). */
 export type Tema = 'light' | 'dark'
@@ -15,12 +15,20 @@ export interface ConfiguracionApp {
 
 /** Valor del contexto global (`useAppContext`). */
 export interface ValorAppContext {
-  /** Usuario con sesión simulada, o null. */
-  usuario: UsuarioSimulado | null
-  /** Inicia sesión; ignora nombres vacíos (devuelve false). */
-  login: (nombre: string) => boolean
-  /** Cierra la sesión. */
-  logout: () => void
+  /** Usuario con sesión iniciada (lo confirma el servidor), o null. */
+  usuario: Usuario | null
+  /** true mientras se consulta al servidor si hay una sesión abierta (al cargar la app). */
+  cargandoSesion: boolean
+  /** Inicia sesión con correo y contraseña. Lanza `ErrorApi` si el servidor la rechaza. */
+  iniciarSesion: (credenciales: CredencialesIngreso) => Promise<Usuario>
+  /** Crea una cuenta y deja la sesión iniciada. Lanza `ErrorApi` si el servidor la rechaza. */
+  registrarse: (datos: DatosRegistro) => Promise<Usuario>
+  /** Cierra la sesión en el servidor y lleva a la página de ingreso. */
+  cerrarSesion: () => Promise<void>
+  /** true si el usuario tiene el rol Jefe. */
+  esJefe: boolean
+  /** Indica si el usuario actual cumple el rol pedido (un Jefe cumple también el de Operador). */
+  tieneRol: (rol: Rol) => boolean
   /** Tema actual de Bootstrap. */
   tema: Tema
   /** Cambia entre claro y oscuro. */
@@ -29,7 +37,7 @@ export interface ValorAppContext {
 }
 
 /** Panel global del shell que puede estar abierto. */
-export type Panel = 'paleta' | 'ayuda' | 'login' | 'mas'
+export type Panel = 'paleta' | 'ayuda' | 'mas'
 
 /** Modo de la guardia de cambios: ajusta el texto de la confirmación. */
 export type ModoGuardia = 'nuevo' | 'edicion'

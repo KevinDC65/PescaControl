@@ -2,12 +2,14 @@ import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 
 import { createPortal } from 'react-dom'
 import { useAppContext } from '../context/AppContext.tsx'
 import { useCapaModal } from '../hooks/useCapaModal.ts'
+import { useCerrarSesion } from '../hooks/useCerrarSesion.ts'
 import { useShell } from '../hooks/useShell.ts'
 import { getAll } from '../services/apiService.ts'
 import type { Desembarque } from '../types/desembarque.ts'
 import { mensajeDeError } from '../utils/errores.ts'
 import { formatearFechaCorta, formatearToneladas } from '../utils/formato.ts'
 import { normalizarTexto } from '../utils/operaciones.ts'
+import { RUTA_PANEL } from '../utils/sesion.ts'
 import InsigniaEspecie from './InsigniaEspecie.tsx'
 import { Tecla } from './Tecla.tsx'
 
@@ -65,7 +67,8 @@ interface PropsPanelPaleta {
 }
 
 function PanelPaleta({ onCerrar }: PropsPanelPaleta) {
-  const { usuario, logout, tema, alternarTema } = useAppContext()
+  const { usuario, esJefe, tema, alternarTema } = useAppContext()
+  const { salir } = useCerrarSesion()
   const { abrir, navegarSeguro } = useShell()
   const [consulta, setConsulta] = useState('')
   const [activo, setActivo] = useState(0)
@@ -101,11 +104,11 @@ function PanelPaleta({ onCerrar }: PropsPanelPaleta) {
       {
         id: 'inicio',
         grupo: 'Ir a',
-        texto: 'Inicio',
+        texto: 'Panel de operaciones',
         icono: 'bi-house',
         atajo: 'G I',
-        claves: 'panel resumen dashboard',
-        ejecutar: ir('/'),
+        claves: 'inicio resumen dashboard',
+        ejecutar: ir(RUTA_PANEL),
       },
       {
         id: 'lista',
@@ -124,6 +127,19 @@ function PanelPaleta({ onCerrar }: PropsPanelPaleta) {
         claves: 'observados en descarga pendientes alerta',
         ejecutar: ir('/lista?atencion=1'),
       },
+      ...(esJefe
+        ? [
+            {
+              id: 'usuarios',
+              grupo: 'Ir a',
+              texto: 'Usuarios y roles',
+              icono: 'bi-people',
+              atajo: 'G U',
+              claves: 'cuentas operadores jefes permisos gestionar',
+              ejecutar: ir('/usuarios'),
+            },
+          ]
+        : []),
       {
         id: 'registrar',
         grupo: 'Acciones',
@@ -141,26 +157,17 @@ function PanelPaleta({ onCerrar }: PropsPanelPaleta) {
         claves: 'tema oscuro claro modo apariencia',
         ejecutar: () => alternarTema(),
       },
-      usuario
-        ? {
-            id: 'sesion',
-            grupo: 'Acciones',
-            texto: `Cerrar sesión de ${usuario.nombre}`,
-            icono: 'bi-box-arrow-right',
-            claves: 'salir logout usuario',
-            ejecutar: () => {
-              logout()
-              onCerrar()
-            },
-          }
-        : {
-            id: 'sesion',
-            grupo: 'Acciones',
-            texto: 'Iniciar sesión',
-            icono: 'bi-person-circle',
-            claves: 'ingresar login usuario',
-            ejecutar: () => abrir('login'),
-          },
+      {
+        id: 'sesion',
+        grupo: 'Acciones',
+        texto: usuario ? `Cerrar sesión de ${usuario.nombre}` : 'Cerrar sesión',
+        icono: 'bi-box-arrow-right',
+        claves: 'salir logout usuario cuenta',
+        ejecutar: () => {
+          onCerrar()
+          void salir()
+        },
+      },
       {
         id: 'atajos',
         grupo: 'Acciones',
@@ -171,7 +178,7 @@ function PanelPaleta({ onCerrar }: PropsPanelPaleta) {
         ejecutar: () => abrir('ayuda'),
       },
     ]
-  }, [tema, usuario, alternarTema, logout, abrir, onCerrar, navegarSeguro])
+  }, [tema, usuario, esJefe, alternarTema, salir, abrir, onCerrar, navegarSeguro])
 
   const termino = normalizarTexto(consulta.trim())
 
