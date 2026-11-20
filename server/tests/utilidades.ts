@@ -75,7 +75,11 @@ export function revisarSinSecretos(respuesta: Response): void {
   expect(clavesProhibidas(respuesta.body)).toEqual([])
   expect(texto).not.toMatch(/\$2[aby]\$\d{2}\$/)
   expect(texto).not.toMatch(/\bat .+\.(ts|js):\d+/)
-  for (const contrasena of CONTRASENAS_USADAS) expect(texto).not.toContain(contrasena)
+  // Se busca la contraseña como valor JSON completo: buscarla como subcadena daba falsos
+  // positivos con contraseñas de prueba cortas (p. ej. "ab1" dentro de un UUID aleatorio).
+  for (const contrasena of CONTRASENAS_USADAS) {
+    expect(texto).not.toContain(JSON.stringify(contrasena))
+  }
 }
 
 /** Ejecuta la petición y revisa que la respuesta no filtre secretos. */
