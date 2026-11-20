@@ -1,0 +1,226 @@
+/* ---------- Escena marina: oleaje, boya, embarcación y carta (components/escena) ---------- */
+
+/*
+ * Movimiento continuo solo con transform y opacity (compositor). Cada franja de oleaje mide
+ * el doble de su contenedor y se desplaza la mitad de su ancho: el bucle no tiene costura.
+ * La velocidad baja con la distancia: las olas lejanas apenas avanzan.
+ */
+
+.pc-ola {
+  position: absolute;
+  inset: auto 0 0;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pc-ola svg {
+  display: block;
+  width: 200%;
+  height: 100%;
+  fill: currentColor;
+  animation: pc-ola-deriva var(--duracion, 30s) linear infinite;
+}
+
+.pc-ola-lejana {
+  --duracion: 70s;
+  color: var(--pc-escena-mar-1);
+}
+
+.pc-ola-media {
+  --duracion: 44s;
+  color: var(--pc-escena-mar-2);
+}
+
+.pc-ola-cercana {
+  --duracion: 30s;
+  color: var(--pc-escena-mar-3);
+}
+
+.pc-ola-frente {
+  --duracion: 21s;
+  color: var(--pc-escena-mar-4);
+}
+
+/* Boya de señal: se mece sobre el agua y su luz destella una vez cada 4 s. */
+.pc-boya {
+  position: relative;
+  width: 100%;
+}
+
+.pc-boya-mecer {
+  position: relative;
+  transform-origin: 50% 82%;
+  animation: pc-boya-vaiven 3.6s ease-in-out infinite alternate;
+}
+
+.pc-boya svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.pc-boya-cuerpo {
+  fill: var(--pc-boya);
+}
+
+.pc-boya-franja {
+  stroke: #0c2b3e;
+  stroke-opacity: 0.82;
+}
+
+.pc-boya-borde {
+  stroke: #0c2b3e;
+  stroke-opacity: 0.5;
+}
+
+.pc-boya-mastil {
+  fill: none;
+  stroke: var(--pc-escena-silueta);
+}
+
+[data-bs-theme='dark'] .pc-boya-mastil {
+  stroke: #c9d8de;
+}
+
+.pc-boya-tope {
+  fill: var(--pc-escena-silueta);
+}
+
+[data-bs-theme='dark'] .pc-boya-tope {
+  fill: #c9d8de;
+}
+
+.pc-boya-sombra {
+  fill: #04131c;
+  opacity: 0.22;
+}
+
+.pc-boya-luz {
+  position: absolute;
+  top: 4.5%;
+  left: 50%;
+  width: 14%;
+  aspect-ratio: 1;
+  margin-left: -7%;
+  border-radius: 50%;
+  background: #fff3cf;
+  box-shadow:
+    0 0 0.5rem 0.2rem rgba(255, 236, 180, 0.9),
+    0 0 1.75rem 0.75rem rgba(255, 214, 140, 0.45);
+  opacity: 0.2;
+  animation: pc-boya-destello 4s ease-out infinite;
+}
+
+/* Embarcación de cerco: cabeceo suave sobre la ola. */
+.pc-embarcacion {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 80%;
+  animation: pc-cabeceo 5.2s ease-in-out infinite alternate;
+}
+
+.pc-embarcacion-casco {
+  fill: var(--pc-escena-silueta);
+}
+
+.pc-embarcacion-aparejo {
+  fill: none;
+  stroke: var(--pc-escena-silueta);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.pc-embarcacion-ventanas {
+  fill: var(--pc-escena-ventana);
+}
+
+.pc-embarcacion-luz {
+  fill: #fff7e0;
+  opacity: 0;
+}
+
+[data-bs-theme='dark'] .pc-embarcacion-luz {
+  opacity: 1;
+}
+
+/* Carta náutica: isóbatas, sondas y escala graduada. */
+.pc-carta {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pc-carta-isobatas {
+  stroke: var(--pc-isobata);
+  stroke-width: 1.2;
+}
+
+.pc-carta-isobatas path:nth-child(even) {
+  stroke-dasharray: 2 5;
+}
+
+.pc-carta-sondas {
+  fill: rgba(167, 214, 233, 0.34);
+  font-family: var(--pc-fuente-cifras);
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.pc-carta-escala {
+  stroke: rgba(167, 214, 233, 0.32);
+  stroke-width: 1;
+}
+
+@keyframes pc-ola-deriva {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pc-boya-vaiven {
+  from {
+    transform: translateY(0) rotate(-5deg);
+  }
+  to {
+    transform: translateY(5%) rotate(5deg);
+  }
+}
+
+@keyframes pc-boya-destello {
+  0% {
+    opacity: 0.2;
+  }
+  6% {
+    opacity: 1;
+  }
+  22%,
+  100% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes pc-cabeceo {
+  from {
+    transform: rotate(-1.4deg) translateY(0);
+  }
+  to {
+    transform: rotate(1.2deg) translateY(4%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-ola svg,
+  .pc-boya-mecer,
+  .pc-embarcacion {
+    animation: none;
+  }
+
+  .pc-boya-luz {
+    animation: none;
+    opacity: 0.85;
+  }
+}

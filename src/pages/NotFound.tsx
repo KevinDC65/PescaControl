@@ -1,9 +1,16 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Tecla } from '../components/Tecla.tsx'
+import { useAppContext } from '../context/AppContext.tsx'
 import { useShell } from '../hooks/useShell.ts'
+import { RUTA_PANEL } from '../utils/sesion.ts'
 
+/**
+ * Página 404. Con sesión se muestra dentro del shell y ofrece el panel, Desembarques y la
+ * búsqueda; sin sesión ofrece la página principal y el ingreso.
+ */
 function NotFound() {
   const { pathname } = useLocation()
+  const { usuario } = useAppContext()
   const { abrir } = useShell()
 
   return (
@@ -17,30 +24,53 @@ function NotFound() {
         <span className="pc-404-cifra">404</span>
         <span className="pc-404-nota">Fuera de carta · sin sondaje</span>
       </div>
-      <h2 id="titulo-404" className="pc-titulo-pagina">
-        Página no encontrada
-      </h2>
+      {usuario ? (
+        <h2 id="titulo-404" className="pc-titulo-pagina">
+          Página no encontrada
+        </h2>
+      ) : (
+        <h1 id="titulo-404" className="pc-titulo-pagina">
+          Página no encontrada
+        </h1>
+      )}
       <p className="pc-bajada">
         La dirección <code className="pc-404-ruta">{pathname}</code> no existe en PescaControl.
         Revisa el enlace o sigue desde una de estas opciones.
       </p>
       <div className="pc-404-acciones">
-        <Link to="/" className="btn btn-primary d-inline-flex align-items-center gap-2">
-          <i className="bi bi-compass" aria-hidden="true" />
-          Volver al inicio
-        </Link>
-        <Link to="/lista" className="btn btn-outline-secondary">
-          Ver desembarques
-        </Link>
-        <button
-          type="button"
-          className="btn btn-outline-secondary d-inline-flex align-items-center gap-2"
-          onClick={() => abrir('paleta')}
-        >
-          <i className="bi bi-search" aria-hidden="true" />
-          Buscar
-          <Tecla mod>K</Tecla>
-        </button>
+        {usuario ? (
+          <>
+            <Link
+              to={RUTA_PANEL}
+              className="btn btn-primary d-inline-flex align-items-center gap-2"
+            >
+              <i className="bi bi-compass" aria-hidden="true" />
+              Volver al panel
+            </Link>
+            <Link to="/lista" className="btn btn-outline-secondary">
+              Ver desembarques
+            </Link>
+            <button
+              type="button"
+              className="btn btn-outline-secondary d-inline-flex align-items-center gap-2"
+              onClick={() => abrir('paleta')}
+            >
+              <i className="bi bi-search" aria-hidden="true" />
+              Buscar
+              <Tecla mod>K</Tecla>
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/" className="btn btn-primary d-inline-flex align-items-center gap-2">
+              <i className="bi bi-compass" aria-hidden="true" />
+              Ir a la página principal
+            </Link>
+            <Link to="/ingresar" className="btn btn-outline-secondary">
+              Ingresar
+            </Link>
+          </>
+        )}
       </div>
     </section>
   )

@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext.tsx'
 import { useShell } from '../hooks/useShell.ts'
 import Marca from './Marca.tsx'
+import { RUTA_PANEL } from '../utils/sesion.ts'
 import { Tecla } from './Tecla.tsx'
 
 /** Nivel de las migas de pan; con `ruta`, es un enlace. */
@@ -12,8 +13,9 @@ interface Miga {
 
 /** Migas de pan de la ruta actual (el primer nivel siempre es el título de la app). */
 function migasDe(pathname: string): Miga[] {
-  if (pathname === '/') return [{ texto: 'Inicio' }]
+  if (pathname === RUTA_PANEL) return [{ texto: 'Panel' }]
   if (pathname === '/lista') return [{ texto: 'Desembarques' }]
+  if (pathname === '/usuarios') return [{ texto: 'Usuarios' }]
   if (pathname === '/registro') {
     return [{ texto: 'Desembarques', ruta: '/lista' }, { texto: 'Registrar desembarque' }]
   }
@@ -42,7 +44,7 @@ function Header() {
           <Marca />
         </span>
         <h1 className="pc-titulo-app">
-          <Link to="/" className="pc-titulo-app-enlace">
+          <Link to={RUTA_PANEL} className="pc-titulo-app-enlace">
             PescaControl
           </Link>
         </h1>

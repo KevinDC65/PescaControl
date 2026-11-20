@@ -1,3 +1,4 @@
+import { useAppContext } from '../context/AppContext.tsx'
 import { useShell } from '../hooks/useShell.ts'
 import Modal from './Modal.tsx'
 import { Tecla } from './Tecla.tsx'
@@ -7,6 +8,8 @@ interface AtajoAyuda {
   /** Cada combinación es una lista de teclas; 'mod' es Ctrl o ⌘. */
   teclas: string[][]
   texto: string
+  /** Solo se muestra a los Jefes. */
+  soloJefe?: boolean
 }
 
 /** Grupo de atajos de la ayuda. */
@@ -27,9 +30,10 @@ const ATAJOS: GrupoAtajos[] = [
   {
     grupo: 'Navegación',
     items: [
-      { teclas: [['G'], ['I']], texto: 'Ir a Inicio' },
+      { teclas: [['G'], ['I']], texto: 'Ir al panel' },
       { teclas: [['G'], ['L']], texto: 'Ir a Desembarques' },
       { teclas: [['G'], ['R']], texto: 'Ir a Registro' },
+      { teclas: [['G'], ['U']], texto: 'Ir a Usuarios (solo Jefe)', soloJefe: true },
       { teclas: [['N']], texto: 'Registrar un desembarque nuevo' },
     ],
   },
@@ -45,6 +49,7 @@ const ATAJOS: GrupoAtajos[] = [
 /** Ventana con los atajos de teclado disponibles (se abre con "?"). */
 function AyudaAtajos() {
   const { panel, cerrar } = useShell()
+  const { esJefe } = useAppContext()
 
   return (
     <Modal
@@ -63,23 +68,25 @@ function AyudaAtajos() {
           <section key={seccion.grupo}>
             <h3 className="pc-atajos-grupo">{seccion.grupo}</h3>
             <dl>
-              {seccion.items.map((item) => (
-                <div key={item.texto} className="pc-atajos-fila">
-                  <dt>{item.texto}</dt>
-                  <dd>
-                    {item.teclas.map((combinacion, indice) => (
-                      <span key={combinacion.join('+')} className="pc-atajos-teclas">
-                        {indice > 0 && <span className="pc-atajos-luego">luego</span>}
-                        {combinacion[0] === 'mod' ? (
-                          <Tecla mod>{combinacion[1]}</Tecla>
-                        ) : (
-                          <Tecla>{combinacion[0]}</Tecla>
-                        )}
-                      </span>
-                    ))}
-                  </dd>
-                </div>
-              ))}
+              {seccion.items
+                .filter((item) => esJefe || !item.soloJefe)
+                .map((item) => (
+                  <div key={item.texto} className="pc-atajos-fila">
+                    <dt>{item.texto}</dt>
+                    <dd>
+                      {item.teclas.map((combinacion, indice) => (
+                        <span key={combinacion.join('+')} className="pc-atajos-teclas">
+                          {indice > 0 && <span className="pc-atajos-luego">luego</span>}
+                          {combinacion[0] === 'mod' ? (
+                            <Tecla mod>{combinacion[1]}</Tecla>
+                          ) : (
+                            <Tecla>{combinacion[0]}</Tecla>
+                          )}
+                        </span>
+                      ))}
+                    </dd>
+                  </div>
+                ))}
             </dl>
           </section>
         ))}

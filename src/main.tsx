@@ -16,13 +16,13 @@ if (!raiz) throw new Error('No se encontró el elemento #root en index.html.')
 createRoot(raiz).render(
   <StrictMode>
     <BrowserRouter>
-      <AppProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <AppProvider>
           <ShellProvider>
             <App />
           </ShellProvider>
-        </ToastProvider>
-      </AppProvider>
+        </AppProvider>
+      </ToastProvider>
     </BrowserRouter>
   </StrictMode>,
 )

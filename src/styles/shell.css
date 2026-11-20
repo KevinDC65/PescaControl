@@ -767,3 +767,65 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ---------- Usuario de la sesión: nombre, rol y salir ---------- */
+
+.pc-riel-usuario-datos {
+  display: grid;
+  flex: 1;
+  gap: 0.1875rem;
+  justify-items: start;
+  min-width: 0;
+}
+
+.pc-riel-usuario-datos .pc-riel-usuario-nombre {
+  max-width: 100%;
+}
+
+@media (min-width: 992px) {
+  .pc-riel[data-colapsada='true'] .pc-riel-usuario {
+    flex-direction: column;
+  }
+
+  .pc-riel[data-colapsada='true'] .pc-riel-salir {
+    display: inline-grid;
+  }
+}
+
+.pc-riel-salir:disabled {
+  opacity: 0.5;
+}
+
+/* Insignia de rol (Operador / Jefe): ícono y texto, nunca solo color. */
+.pc-rol {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.0625rem 0.5rem;
+  border: 1px solid var(--pc-borde);
+  border-radius: 999px;
+  background-color: var(--pc-superficie-2);
+  color: var(--pc-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.pc-rol[data-rol='jefe'] {
+  border-color: var(--bs-primary-border-subtle);
+  background-color: var(--pc-mar-suave);
+  color: var(--pc-mar-texto);
+}
+
+.pc-rol[data-sobre-oscuro] {
+  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #c2d3da;
+}
+
+.pc-rol[data-sobre-oscuro][data-rol='jefe'] {
+  border-color: rgba(108, 195, 232, 0.35);
+  background-color: rgba(108, 195, 232, 0.14);
+  color: #a9dcf2;
+}

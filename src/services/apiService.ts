@@ -1,69 +1,17 @@
-import axios, { isAxiosError, type AxiosResponse } from 'axios'
 import type { Desembarque, DesembarqueNuevo } from '../types/desembarque.ts'
 import { hoyISO } from '../utils/formato.ts'
+import { api, estadoDeError, solicitar } from './http.ts'
 
-// Único punto de acceso HTTP de la aplicación. Las páginas importan estas funciones
-// y nunca usan axios ni fetch directamente.
+// Operaciones REST de desembarques. Las páginas importan estas funciones y nunca usan
+// axios ni fetch directamente. Todas requieren sesión; eliminar requiere el rol Jefe.
 
-/** URL base de json-server (configurable con VITE_API_URL en .env). */
-export const API_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
+export { API_URL } from './http.ts'
 
 const RECURSO = '/desembarques'
 
-const MENSAJE_SIN_CONEXION =
-  'No se pudo conectar con el servidor. Verifica que la API esté en ejecución (npm run server).'
-
-const api = axios.create({
-  baseURL: API_URL,
-  timeout: 8000,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  },
-})
-
-/**
- * Convierte un error de Axios en un Error con mensaje en español para mostrar en la interfaz.
- * El error original se conserva en `cause` para depurar.
- * @param error Error capturado.
- * @param accion Verbo de la operación (ej. "listar los desembarques").
- * @throws {Error} Siempre.
- */
-function traducirError(error: unknown, accion: string): never {
-  const errorHttp = isAxiosError(error) ? error : undefined
-  const respuesta = errorHttp?.response
-  if (respuesta) {
-    if (respuesta.status === 404) {
-      const mensaje = accion.endsWith('el desembarque')
-        ? 'El desembarque no existe o fue eliminado.'
-        : 'No se encontró el recurso de desembarques en el servidor. Revisa la URL de la API.'
-      throw new Error(mensaje, { cause: error })
-    }
-    if (respuesta.status >= 500) {
-      throw new Error(
-        `El servidor tuvo un problema al ${accion} (código ${respuesta.status}). Intenta de nuevo.`,
-        { cause: error },
-      )
-    }
-    throw new Error(`Error al ${accion} (código ${respuesta.status}).`, { cause: error })
-  }
-  const codigosDeRed = ['ECONNABORTED', 'ETIMEDOUT', 'ERR_NETWORK']
-  if (errorHttp?.request || codigosDeRed.includes(errorHttp?.code ?? '')) {
-    throw new Error(MENSAJE_SIN_CONEXION, { cause: error })
-  }
-  throw new Error(`Error al ${accion} (código ${errorHttp?.code ?? 'desconocido'}).`, {
-    cause: error,
-  })
-}
-
-/** Ejecuta una petición y devuelve solo `response.data`, traduciendo los errores. */
-async function solicitar<T>(accion: string, peticion: () => Promise<AxiosResponse<T>>): Promise<T> {
-  try {
-    const respuesta = await peticion()
-    return respuesta.data
-  } catch (error) {
-    traducirError(error, accion)
-  }
+const MENSAJES_DESEMBARQUE: Partial<Record<number, string>> = {
+  404: 'El desembarque no existe o fue eliminado.',
+  403: 'Tu rol no tiene permiso para esta acción.',
 }
 
 /** Ruta de un desembarque concreto. Evita que un id vacío termine pidiendo la colección. */
@@ -83,13 +31,15 @@ function sinId<T extends object>(desembarque: T): Omit<T, 'id'> {
 
 /** Obtiene todos los desembarques. */
 export function getAll(): Promise<Desembarque[]> {
-  return solicitar('listar los desembarques', () => api.get<Desembarque[]>(RECURSO))
+  return solicitar('listar los desembarques', () => api.get<Desembarque[]>(RECURSO), {
+    404: 'No se encontró el recurso de desembarques en el servidor. Revisa la URL de la API.',
+  })
 }
 
 /** Obtiene un desembarque por su id. */
 export async function getById(id: string): Promise<Desembarque> {
   const ruta = rutaDesembarque(id)
-  return solicitar('obtener el desembarque', () => api.get<Desembarque>(ruta))
+  return solicitar('obtener el desembarque', () => api.get<Desembarque>(ruta), MENSAJES_DESEMBARQUE)
 }
 
 /**
@@ -101,7 +51,11 @@ export async function getById(id: string): Promise<Desembarque> {
 export function add(desembarque: DesembarqueNuevo): Promise<Desembarque> {
   const datos = sinId(desembarque)
   datos.fechaDesembarque = datos.fechaDesembarque || hoyISO()
-  return solicitar('registrar el desembarque', () => api.post<Desembarque>(RECURSO, datos))
+  return solicitar(
+    'registrar el desembarque',
+    () => api.post<Desembarque>(RECURSO, datos),
+    MENSAJES_DESEMBARQUE,
+  )
 }
 
 /**
@@ -116,19 +70,20 @@ export async function update(id: string, desembarque: DesembarqueNuevo): Promise
     const actual = await getById(id)
     datos.fechaDesembarque = actual.fechaDesembarque
   }
-  return solicitar('actualizar el desembarque', () => api.put<Desembarque>(ruta, datos))
+  return solicitar(
+    'actualizar el desembarque',
+    () => api.put<Desembarque>(ruta, datos),
+    MENSAJES_DESEMBARQUE,
+  )
 }
 
-/** Elimina un desembarque. */
+/** Elimina un desembarque (solo Jefe). */
 export async function remove(id: string): Promise<void> {
   const ruta = rutaDesembarque(id)
-  await solicitar('eliminar el desembarque', () => api.delete<unknown>(ruta))
+  await solicitar('eliminar el desembarque', () => api.delete<unknown>(ruta), MENSAJES_DESEMBARQUE)
 }
 
-/**
- * Indica si el error lo causó una respuesta 404 de la API (el desembarque no existe).
- * `traducirError` conserva el error de Axios en `cause`.
- */
+/** Indica si el error lo causó una respuesta 404 de la API (el desembarque no existe). */
 export function esErrorNoEncontrado(error: unknown): boolean {
-  return error instanceof Error && isAxiosError(error.cause) && error.cause.response?.status === 404
+  return estadoDeError(error) === 404
 }
