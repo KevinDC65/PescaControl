@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>PescaControl · Informe PC3</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 20mm 18mm 20mm 18mm;
+      }
+      :root {
+        --tinta: #0f2533;
+        --suave: #45606e;
+        --linea: #d5e0e3;
+        --mar: #0b5277;
+        --espuma: #f3f7f8;
+        --boya: #e8611a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        font-size: 10.5pt;
+        line-height: 1.5;
+        color: var(--tinta);
+        margin: 0;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: 'Segoe UI Semibold', 'Segoe UI', system-ui, sans-serif;
+        line-height: 1.2;
+        margin: 0 0 8pt;
+      }
+      h2 {
+        font-size: 17pt;
+        color: var(--mar);
+        border-bottom: 1px solid var(--linea);
+        padding-bottom: 4pt;
+        margin-top: 4pt;
+      }
+      h3 {
+        font-size: 12.5pt;
+        margin-top: 14pt;
+      }
+      p {
+        margin: 0 0 8pt;
+      }
+      section {
+        break-before: page;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 6pt 0 12pt;
+        font-size: 9.5pt;
+      }
+      th,
+      td {
+        border: 1px solid var(--linea);
+        padding: 4pt 6pt;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: var(--espuma);
+      }
+      code {
+        font-family: Consolas, 'Courier New', monospace;
+        font-size: 9pt;
+        background: #e8eff1;
+        padding: 0 3pt;
+        border-radius: 2pt;
+      }
+      pre {
+        font-family: Consolas, 'Courier New', monospace;
+        font-size: 8.4pt;
+        line-height: 1.4;
+        background: var(--espuma);
+        border: 1px solid var(--linea);
+        border-left: 3pt solid var(--mar);
+        padding: 7pt 9pt;
+        margin: 4pt 0 10pt;
+        white-space: pre-wrap;
+        break-inside: avoid;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+      }
+      figure {
+        margin: 0 0 12pt;
+        break-inside: avoid;
+      }
+      figure img {
+        width: 100%;
+        border: 1px solid var(--linea);
+      }
+      figure.movil img {
+        width: 38%;
+      }
+      figcaption {
+        font-size: 9pt;
+        color: var(--suave);
+        margin-top: 3pt;
+      }
+      .rejilla {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10pt;
+      }
+      .portada {
+        height: 250mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .portada .marca {
+        font-size: 10pt;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--suave);
+      }
+      .portada h1 {
+        font-size: 34pt;
+        margin-top: 50mm;
+        color: var(--mar);
+      }
+      .portada .sub {
+        font-size: 14pt;
+        color: var(--suave);
+      }
+      .portada .boya {
+        display: inline-block;
+        width: 12pt;
+        height: 12pt;
+        border-radius: 50%;
+        background: var(--boya);
+        margin-right: 6pt;
+        vertical-align: middle;
+      }
+      .portada table td:first-child {
+        width: 32%;
+        font-weight: 600;
+        background: var(--espuma);
+      }
+      .relleno {
+        color: #526a76;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Portada: completar curso, docente e integrantes antes de exportar el PDF. -->
+    <div class="portada">
+      <div>
+        <div class="marca">Universidad Tecnológica del Perú</div>
+        <h1><span class="boya"></span>PescaControl</h1>
+        <p class="sub">
+          Sistema de Gestión de Operaciones Pesqueras y Desembarque.<br />
+          Práctica integradora PC3 · React, Bootstrap y servicios REST
+        </p>
+      </div>
+      <table>
+        <tr>
+          <td>Curso</td>
+          <td class="relleno">________________________________</td>
+        </tr>
+        <tr>
+          <td>Docente</td>
+          <td class="relleno">________________________________</td>
+        </tr>
+        <tr>
+          <td>Integrantes</td>
+          <td class="relleno">
+            1. ______________________________<br />
+            2. ______________________________<br />
+            3. ______________________________<br />
+            4. ______________________________<br />
+            5. ______________________________
+          </td>
+        </tr>
+        <tr>
+          <td>Repositorio</td>
+          <td>https://github.com/KevinDC65/PescaControl</td>
+        </tr>
+        <tr>
+          <td>Fecha</td>
+          <td>Diciembre de 2026</td>
+        </tr>
+      </table>
+    </div>
+
+    <section>
+      <h2>1. Descripción de la aplicación</h2>
+      <p>
+        <strong>PescaControl</strong> permite a la jefatura de desembarque de un puerto pesquero
+        registrar cada desembarque (embarcación, matrícula, especie, arte de pesca, toneladas,
+        precio por tonelada, puerto, destino y estado de la descarga), consultarlos, editarlos y
+        eliminarlos, y seguir la operación desde un panel con indicadores. Los datos se guardan en un
+        servidor REST simulado con <code>json-server</code> a partir del archivo
+        <code>db.json</code>.
+      </p>
+      <p>
+        La interfaz funciona como una aplicación de trabajo: barra lateral de navegación (barra
+        inferior en el celular), búsqueda global y comandos con <code>Ctrl+K</code>, atajos de
+        teclado, notificaciones de confirmación, lista de desembarques en tabla o tarjetas, detalle
+        en un panel lateral, y tema claro y oscuro.
+      </p>
+      <p>Cada desembarque tiene la siguiente estructura:</p>
+      <table>
+        <tr>
+          <th>Campo</th>
+          <th>Tipo</th>
+          <th>Regla</th>
+        </tr>
+        <tr>
+          <td><code>codigo</code></td>
+          <td>texto</td>
+          <td>Obligatorio y único, formato <code>DSB-000</code></td>
+        </tr>
+        <tr>
+          <td><code>embarcacion</code></td>
+          <td>texto</td>
+          <td>Nombre de la embarcación, 3 a 60 caracteres</td>
+        </tr>
+        <tr>
+          <td><code>matricula</code></td>
+          <td>texto</td>
+          <td>Formato <code>AA-00000-AA</code>; el prefijo es la capitanía (CE, CO, PT…)</td>
+        </tr>
+        <tr>
+          <td><code>especie</code> / <code>artePesca</code></td>
+          <td>texto</td>
+          <td>Anchoveta, Jurel, Caballa, Bonito, Perico, Pota, Merluza / Cerco, Arrastre, Espinel, Pinta, Enmalle</td>
+        </tr>
+        <tr>
+          <td><code>puerto</code> / <code>destino</code></td>
+          <td>texto</td>
+          <td>Paita, Chimbote, Callao, Pisco, Ilo / Consumo humano directo, Harina y aceite</td>
+        </tr>
+        <tr>
+          <td><code>toneladas</code></td>
+          <td>número</td>
+          <td>Mayor que 0, máximo 2 decimales y hasta 1 500 t</td>
+        </tr>
+        <tr>
+          <td><code>precioTonelada</code></td>
+          <td>número</td>
+          <td>Precio en soles por tonelada, mayor que 0</td>
+        </tr>
+        <tr>
+          <td><code>fechaDesembarque</code></td>
+          <td>texto</td>
+          <td>YYYY-MM-DD, no puede ser futura</td>
+        </tr>
+        <tr>
+          <td><code>estado</code></td>
+          <td>texto</td>
+          <td>Programado, En descarga, Descargado u Observado (En descarga y Observado requieren atención)</td>
+        </tr>
+      </table>
+
+      <h3>Tecnologías</h3>
+      <table>
+        <tr>
+          <th>Tecnología</th>
+          <th>Uso</th>
+        </tr>
+        <tr>
+          <td>React 19 + Vite</td>
+          <td>
+            Interfaz y entorno de desarrollo. Se usó Vite en lugar de
+            <code>create-react-app</code> porque este último está deprecado y no es compatible
+            con las versiones actuales de Node.
+          </td>
+        </tr>
+        <tr>
+          <td>react-router-dom 7</td>
+          <td>Rutas Inicio, Registro, Lista y página 404</td>
+        </tr>
+        <tr>
+          <td>Bootstrap 5.3 + Bootstrap Icons</td>
+          <td>Estilos, grid responsive, componentes de formulario y tema claro/oscuro</td>
+        </tr>
+        <tr>
+          <td>Axios</td>
+          <td>Peticiones HTTP en <code>services/apiService.js</code></td>
+        </tr>
+        <tr>
+          <td>json-server</td>
+          <td>API REST de prueba sobre <code>db.json</code> (puerto 3001)</td>
+        </tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>2. Estructura del proyecto</h2>
+      <pre><code>PescaControl/
+├── db.json                   Datos de prueba (colección "desembarques")
+├── src/
+│   ├── main.jsx              Punto de entrada: Bootstrap, Router y proveedores
+│   ├── App.jsx               Shell de la aplicación y definición de rutas
+│   ├── index.css             Tokens de diseño (tema claro y oscuro)
+│   ├── styles/               Estilos: base, shell, capas, especies y vistas
+│   ├── components/
+│   │   ├── Header.jsx        Título de la aplicación, migas y buscador
+│   │   ├── Navbar.jsx        Barra lateral y barra móvil (NavLink)
+│   │   ├── Footer.jsx        Pie de página
+│   │   ├── DesembarqueForm.jsx  Formulario controlado reutilizable (props)
+│   │   ├── AlertMessage.jsx  Mensajes de confirmación y error
+│   │   ├── Loading.jsx       Indicador "Loading..."
+│   │   ├── TablaDesembarques.jsx  Tabla ordenable con selección múltiple
+│   │   ├── TarjetaDesembarque.jsx Tarjeta de la lista y vista previa
+│   │   ├── DetalleDesembarque.jsx Detalle en panel lateral (Drawer.jsx)
+│   │   ├── Graficos.jsx      Toneladas por especie y por puerto
+│   │   ├── ConfirmModal.jsx  Confirmación de eliminación
+│   │   ├── LoginModal.jsx    Inicio de sesión simulado
+│   │   ├── PaletaComandos.jsx  Búsqueda y comandos con Ctrl+K
+│   │   └── ...               Modal, insignias, estados vacíos, etc.
+│   ├── pages/
+│   │   ├── Home.jsx          Panel de operaciones
+│   │   ├── Registro.jsx      Registro y edición de desembarques
+│   │   ├── Lista.jsx         Tabla/tarjetas, filtros y eliminación
+│   │   └── NotFound.jsx      Página 404
+│   ├── context/
+│   │   ├── AppContext.jsx    Usuario, tema y configuración (useContext)
+│   │   ├── ShellProvider.jsx Paneles abiertos y navegación protegida
+│   │   └── ToastProvider.jsx Notificaciones
+│   ├── hooks/
+│   │   ├── useLocalStorage.js  Custom hook de persistencia
+│   │   └── ...               Atajos, foco en modales, cambios sin guardar
+│   ├── services/
+│   │   └── apiService.js     Operaciones REST con Axios
+│   ├── constants/desembarques.js  Especies, artes, puertos, estados
+│   └── utils/                Validación, formato, operaciones y colores
+└── docs/                     Capturas e informe</code></pre>
+
+      <h3>Responsabilidad de cada carpeta</h3>
+      <table>
+        <tr>
+          <th>Carpeta</th>
+          <th>Responsabilidad</th>
+        </tr>
+        <tr>
+          <td><code>components/</code></td>
+          <td>
+            Piezas visuales reutilizables. Reciben datos por <code>props</code> y avisan
+            eventos (<code>onSubmit</code>, <code>onConfirm</code>, <code>onClose</code>). No
+            llaman a la API.
+          </td>
+        </tr>
+        <tr>
+          <td><code>pages/</code></td>
+          <td>Una por ruta. Usan hooks, consultan la API y combinan componentes.</td>
+        </tr>
+        <tr>
+          <td><code>context/</code></td>
+          <td>Estado global compartido por toda la aplicación.</td>
+        </tr>
+        <tr>
+          <td><code>hooks/</code></td>
+          <td>Lógica reutilizable basada en hooks.</td>
+        </tr>
+        <tr>
+          <td><code>services/</code></td>
+          <td>Único punto de comunicación con el servidor REST.</td>
+        </tr>
+        <tr>
+          <td><code>utils/</code>, <code>constants/</code></td>
+          <td>Funciones puras (validación, cálculos, formato) y catálogos del dominio.</td>
+        </tr>
+      </table>
+
+      <h3>Flujo de datos</h3>
+      <p>
+        Las páginas piden los datos a <code>apiService</code>, que usa Axios para comunicarse con
+        json-server. Mientras esperan, muestran <code>Loading...</code> o esqueletos; al terminar,
+        muestran el resultado o un mensaje de error con <code>AlertMessage</code>. Los indicadores
+        del panel (toneladas, valor, toneladas por especie y por puerto) se calculan con funciones
+        puras de <code>utils/operaciones.js</code>. El usuario y el tema se leen desde
+        <code>AppContext</code>, que los conserva en <code>localStorage</code> mediante el custom
+        hook <code>useLocalStorage</code>.
+      </p>
+    </section>
+
+    <section>
+      <h2>3. Componentes, props y hooks</h2>
+
+      <h3>Formulario controlado y props</h3>
+      <p>
+        <code>DesembarqueForm</code> guarda todos los campos en un único estado y los actualiza con
+        un <code>onChange</code> genérico. La página <code>Registro</code> lo reutiliza para
+        registrar y para editar, comunicándose solo por props: <code>desembarqueInicial</code>,
+        <code>onSubmit</code>, <code>textoBoton</code>, <code>cargando</code>,
+        <code>codigosExistentes</code>, <code>onCambio</code> y <code>onCancel</code>.
+      </p>
+      <pre><code>// En DesembarqueForm.jsx: un solo objeto de estado para todos los campos
+function cambiarCampo(name, value) {
+  const limpio = EN_MAYUSCULAS.includes(name) ? value.toUpperCase() : value
+  const nuevos = { ...valores, [name]: limpio }
+  setValores(nuevos)
+  onCambio?.(nuevos)
+}
+
+// onChange genérico: sirve para todos los campos gracias a su atributo name
+function manejarCambio(evento) {
+  const { name, value } = evento.target
+  cambiarCampo(name, value)
+}
+
+// En Registro.jsx (modo edición)
+&lt;DesembarqueForm
+  desembarqueInicial={desembarque}
+  onSubmit={guardar}
+  textoBoton="Guardar cambios"
+  cargando={guardando}
+  codigosExistentes={codigos}
+  onCambio={setValores}
+  onCancel={() =&gt; navegarSeguro('/lista')}
+/&gt;</code></pre>
+
+      <h3>Validaciones</h3>
+      <p>
+        La función <code>validarDesembarque</code> devuelve un objeto con los errores por campo
+        (código <code>DSB-000</code> único, matrícula <code>AA-00000-AA</code>, toneladas y precio
+        positivos, fecha no futura, valores de catálogo). Cada campo inválido recibe la clase
+        <code>is-invalid</code> (borde rojo y mensaje debajo) y los válidos <code>is-valid</code>;
+        al enviar se muestra una alerta con el número de campos por corregir.
+      </p>
+
+      <h3>useState y useEffect</h3>
+      <p>
+        <code>useState</code> maneja el estado local (desembarques, carga, errores, filtros).
+        <code>useEffect</code> carga los datos cuando la página se monta y cancela la
+        actualización si el componente se desmonta antes de recibir la respuesta:
+      </p>
+      <pre><code>useEffect(() =&gt; {
+  let activo = true
+  getAll()
+    .then((datos) =&gt; { if (activo) setDesembarques(datos) })
+    .catch((e) =&gt; { if (activo) setError(e.message) })
+    .finally(() =&gt; { if (activo) setCargando(false) })
+  return () =&gt; { activo = false }
+}, [intento])</code></pre>
+
+      <h3>useRef</h3>
+      <p>
+        Se usa para enfocar campos sin provocar renderizados: el campo "Código" al abrir el
+        formulario y tras guardar, y el primer campo inválido cuando el envío tiene errores.
+      </p>
+      <pre><code>const codigoRef = useRef(null)
+useEffect(() =&gt; { codigoRef.current?.focus() }, [])
+
+// Al enviar con errores:
+const elemento = formRef.current?.elements.namedItem(primerInvalido)
+// Los grupos de opciones (especie, arte, estado) devuelven una lista de radios.
+const destino = elemento instanceof RadioNodeList ? elemento[0] : elemento
+destino?.focus()</code></pre>
+
+      <h3>useContext</h3>
+      <p>
+        <code>AppContext</code> comparte el usuario autenticado (inicio de sesión simulado), el
+        tema claro/oscuro y la configuración (moneda y unidad). La navegación y el panel de inicio
+        lo consumen con <code>useAppContext()</code>.
+      </p>
+      <pre><code>const [usuarioGuardado, setUsuario] = useLocalStorage('pescacontrol:usuario', null)
+const [temaGuardado, setTema] = useLocalStorage('pescacontrol:tema', temaDelSistema)
+
+useEffect(() =&gt; {
+  document.documentElement.setAttribute('data-bs-theme', tema)
+}, [tema])
+
+// En cualquier componente:
+const { usuario, tema, alternarTema, config } = useAppContext()</code></pre>
+
+      <h3>Custom hook useLocalStorage</h3>
+      <p>
+        Tiene la misma interfaz que <code>useState</code>, pero guarda el valor en
+        <code>localStorage</code>. Lee el valor al iniciar, lo guarda cada vez que cambia y
+        tolera datos inválidos o almacenamiento no disponible. Se usa para el tema, el usuario, el
+        borrador del formulario, la vista de la lista y la barra lateral contraída.
+      </p>
+      <pre><code>export function useLocalStorage(clave, valorInicial) {
+  const [valor, setValor] = useState(() =&gt; leerValor(clave, valorInicial))
+
+  useEffect(() =&gt; {
+    try {
+      window.localStorage.setItem(clave, JSON.stringify(valor))
+    } catch {
+      // Almacenamiento bloqueado: el valor sigue disponible en memoria.
+    }
+  }, [clave, valor])
+
+  return [valor, setValor]
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>4. Servicios REST</h2>
+      <p>
+        Toda la comunicación con el servidor está en <code>src/services/apiService.js</code>. Se
+        crea una instancia de Axios con la URL base (configurable con la variable de entorno
+        <code>VITE_API_URL</code>) y cada operación devuelve directamente los datos de la
+        respuesta.
+      </p>
+      <table>
+        <tr>
+          <th>Método</th>
+          <th>Endpoint</th>
+          <th>Función</th>
+          <th>Uso en la aplicación</th>
+        </tr>
+        <tr>
+          <td>GET</td>
+          <td><code>/desembarques</code></td>
+          <td><code>getAll()</code></td>
+          <td>Lista, panel de inicio, paleta de búsqueda y validación de códigos únicos</td>
+        </tr>
+        <tr>
+          <td>GET</td>
+          <td><code>/desembarques/:id</code></td>
+          <td><code>getById(id)</code></td>
+          <td>Cargar el desembarque en modo edición</td>
+        </tr>
+        <tr>
+          <td>POST</td>
+          <td><code>/desembarques</code></td>
+          <td><code>add(desembarque)</code></td>
+          <td>Registrar un desembarque</td>
+        </tr>
+        <tr>
+          <td>PUT</td>
+          <td><code>/desembarques/:id</code></td>
+          <td><code>update(id, desembarque)</code></td>
+          <td>Guardar los cambios de un desembarque</td>
+        </tr>
+        <tr>
+          <td>DELETE</td>
+          <td><code>/desembarques/:id</code></td>
+          <td><code>remove(id)</code></td>
+          <td>Botón "Eliminar" (individual y en lote)</td>
+        </tr>
+      </table>
+      <pre><code>const RECURSO = '/desembarques'
+const api = axios.create({ baseURL: API_URL, timeout: 8000 })
+
+export function getAll() {
+  return solicitar('listar los desembarques', () =&gt; api.get(RECURSO))
+}
+
+export function add(desembarque) {
+  const datos = sinId(desembarque)
+  datos.fechaDesembarque = datos.fechaDesembarque || hoyISO()
+  return solicitar('registrar el desembarque', () =&gt; api.post(RECURSO, datos))
+}
+
+export async function remove(id) {
+  const ruta = rutaDesembarque(id)
+  await solicitar('eliminar el desembarque', () =&gt; api.delete(ruta))
+}</code></pre>
+
+      <h3>Estados de carga y manejo de errores</h3>
+      <p>
+        Mientras una petición está en curso, la página muestra el componente
+        <code>Loading</code> con el texto "Loading..." y los botones de guardar o eliminar se
+        deshabilitan con un indicador de progreso. Si la petición falla, el servicio traduce el
+        error a un mensaje claro en español:
+      </p>
+      <table>
+        <tr>
+          <th>Situación</th>
+          <th>Mensaje mostrado</th>
+        </tr>
+        <tr>
+          <td>Servidor apagado o sin conexión</td>
+          <td>
+            "No se pudo conectar con el servidor. Verifica que la API esté en ejecución (npm run
+            server)."
+          </td>
+        </tr>
+        <tr>
+          <td>Desembarque inexistente (404)</td>
+          <td>"El desembarque no existe o fue eliminado."</td>
+        </tr>
+        <tr>
+          <td>Error interno del servidor (5xx)</td>
+          <td>"El servidor tuvo un problema al registrar el desembarque (código 500). Intenta de nuevo."</td>
+        </tr>
+      </table>
+      <p>
+        Las operaciones exitosas muestran una confirmación con <code>AlertMessage</code> dentro de
+        una notificación (por ejemplo, "Se eliminó el desembarque DSB-014"), que se cierra sola a los
+        pocos segundos.
+      </p>
+    </section>
+
+    <section>
+      <h2>5. Capturas de la interfaz</h2>
+      <figure>
+        <img src="../capturas/01-home.png" alt="Panel de operaciones" />
+        <figcaption>
+          Figura 1. Inicio: toneladas desembarcadas, valor, desembarques que requieren atención y
+          toneladas por especie.
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="../capturas/06-lista.png" alt="Lista de desembarques" />
+        <figcaption>
+          Figura 2. Desembarques en vista tabla: filtros, orden por columna, selección y acciones por
+          fila.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <div class="rejilla">
+        <figure>
+          <img src="../capturas/02-registro-vacio.png" alt="Formulario vacío" />
+          <figcaption>Figura 3. Formulario de registro con foco en "Código".</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/03-registro-validacion.png" alt="Validaciones" />
+          <figcaption>Figura 4. Validaciones con estilos condicionales y alerta.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/04-registro-exito.png" alt="Registro exitoso" />
+          <figcaption>Figura 5. Confirmación tras registrar un desembarque.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/05-lista-loading.png" alt="Cargando" />
+          <figcaption>Figura 6. Indicador "Loading..." mientras se obtienen los datos.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/07-eliminar-confirmacion.png" alt="Confirmar eliminación" />
+          <figcaption>Figura 7. Confirmación antes de eliminar un desembarque.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/08-edicion.png" alt="Edición" />
+          <figcaption>Figura 8. Formulario en modo edición.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <div class="rejilla">
+        <figure>
+          <img src="../capturas/09-error-servidor.png" alt="Error de servidor" />
+          <figcaption>Figura 9. Mensaje de error con el servidor detenido.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/10-tema-oscuro.png" alt="Tema oscuro" />
+          <figcaption>Figura 10. Tema oscuro con usuario autenticado (useContext).</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/12-404.png" alt="Página no encontrada" />
+          <figcaption>Figura 11. Página 404 para rutas inexistentes.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/13-db-json.png" alt="API REST" />
+          <figcaption>Figura 12. Respuesta de GET /desembarques en json-server.</figcaption>
+        </figure>
+      </div>
+      <figure class="movil">
+        <img src="../capturas/11-movil.png" alt="Vista móvil" />
+        <figcaption>Figura 13. Vista móvil con la barra inferior.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>6. Verificación de requisitos</h2>
+      <table>
+        <tr>
+          <th>Requisito de la práctica</th>
+          <th>Dónde se cumple</th>
+        </tr>
+        <tr>
+          <td>Proyecto React con Bootstrap</td>
+          <td><code>main.jsx</code>, <code>index.css</code></td>
+        </tr>
+        <tr>
+          <td>App con encabezado y título</td>
+          <td><code>App.jsx</code>, <code>Header.jsx</code></td>
+        </tr>
+        <tr>
+          <td>Rutas Home, Registro y Lista</td>
+          <td><code>App.jsx</code> (react-router-dom)</td>
+        </tr>
+        <tr>
+          <td>Navbar con Link</td>
+          <td><code>Navbar.jsx</code> (NavLink)</td>
+        </tr>
+        <tr>
+          <td>Formulario controlado y props</td>
+          <td><code>DesembarqueForm.jsx</code>, <code>Registro.jsx</code></td>
+        </tr>
+        <tr>
+          <td>Validación con alertas y estilos condicionales</td>
+          <td><code>DesembarqueForm.jsx</code>, <code>validarDesembarque.js</code></td>
+        </tr>
+        <tr>
+          <td>useState, useEffect, useRef, useContext</td>
+          <td>Páginas, <code>DesembarqueForm.jsx</code>, <code>AppContext.jsx</code></td>
+        </tr>
+        <tr>
+          <td>Custom hook con localStorage</td>
+          <td><code>useLocalStorage.js</code></td>
+        </tr>
+        <tr>
+          <td>apiService con getAll, add, remove, update</td>
+          <td><code>services/apiService.js</code></td>
+        </tr>
+        <tr>
+          <td>Axios para listar y agregar</td>
+          <td><code>Lista.jsx</code>, <code>Home.jsx</code>, <code>Registro.jsx</code></td>
+        </tr>
+        <tr>
+          <td>Botón Eliminar con DELETE</td>
+          <td><code>Lista.jsx</code>, <code>ConfirmModal.jsx</code></td>
+        </tr>
+        <tr>
+          <td>Indicador Loading...</td>
+          <td><code>Loading.jsx</code></td>
+        </tr>
+        <tr>
+          <td>Mensajes de confirmación y error</td>
+          <td><code>AlertMessage.jsx</code></td>
+        </tr>
+        <tr>
+          <td>db.json con datos de prueba</td>
+          <td>16 desembarques en <code>db.json</code></td>
+        </tr>
+      </table>
+
+      <h2>7. Conclusiones</h2>
+      <p>
+        PescaControl integra los conceptos principales de React: componentes reutilizables
+        comunicados por props, rutas, formularios controlados con validación, y los hooks
+        <code>useState</code>, <code>useEffect</code>, <code>useRef</code> y
+        <code>useContext</code>, además de un custom hook para la persistencia local.
+      </p>
+      <p>
+        Concentrar las peticiones en <code>apiService.js</code> y los cálculos en funciones puras
+        permitió que las páginas no dependan de los detalles de Axios ni de las URL, y facilitó
+        mostrar estados de carga, indicadores de operación y mensajes de error uniformes. Bootstrap
+        aportó un diseño responsive y el tema oscuro sin librerías adicionales.
+      </p>
+      <p>
+        Para ejecutar el proyecto: <code>npm install</code> y luego <code>npm run dev:all</code>,
+        que levanta la API en el puerto 3001 y la aplicación en el puerto 5173.
+      </p>
+    </section>
+  </body>
+</html>

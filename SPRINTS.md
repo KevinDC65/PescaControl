@@ -33,14 +33,14 @@ Escribe tu usuario de GitHub en la tabla del equipo la primera vez.
 
 | Estado | Issue | Dev | Tarea |
 |---|---|---|---|
-| [ ] | #1 | Dev 1 | Shell de la aplicación y encabezado con el título |
-| [ ] | #2 | Dev 1 | Tokens de diseño marino y estilos base |
-| [ ] | #3 | Dev 2 | Navegación lateral y barra móvil con `NavLink` |
-| [ ] | #4 | Dev 2 | Pie de página y estados vacíos |
-| [ ] | #5 | Dev 3 | Formulario controlado `DesembarqueForm` |
-| [ ] | #6 | Dev 4 | Contexto global `AppContext` |
-| [ ] | #7 | Dev 5 | `db.json` con desembarques de prueba |
-| [ ] | #8 | Dev 5 | `services/apiService.js` (getAll, getById, add, update, remove) |
+| [x] | #1 | Dev 1 | Shell de la aplicación y encabezado con el título |
+| [x] | #2 | Dev 1 | Tokens de diseño marino y estilos base |
+| [x] | #3 | Dev 2 | Navegación lateral y barra móvil con `NavLink` |
+| [x] | #4 | Dev 2 | Pie de página y estados vacíos |
+| [x] | #5 | Dev 3 | Formulario controlado `DesembarqueForm` |
+| [x] | #6 | Dev 4 | Contexto global `AppContext` |
+| [x] | #7 | Dev 5 | `db.json` con desembarques de prueba |
+| [x] | #8 | Dev 5 | `services/apiService.js` (getAll, getById, add, update, remove) |
 
 ## Sprint 2 · 25/11 – 29/11
 
@@ -48,14 +48,14 @@ Escribe tu usuario de GitHub en la tabla del equipo la primera vez.
 
 | Estado | Issue | Dev | Tarea |
 |---|---|---|---|
-| [ ] | #9 | Dev 1 | Página `NotFound` (404) |
-| [ ] | #10 | Dev 1 | Verificar CI y README de instalación |
-| [ ] | #11 | Dev 2 | Panel de operaciones en Inicio |
-| [ ] | #12 | Dev 3 | Validaciones: alertas y estilos condicionales |
-| [ ] | #13 | Dev 3 | `useRef`: foco automático en el formulario |
-| [ ] | #14 | Dev 4 | Custom hook `useLocalStorage` y persistencia |
-| [ ] | #15 | Dev 4 | `AlertMessage` y notificaciones tipo toast |
-| [ ] | #16 | Dev 5 | Lista: tabla, `Loading...` y botón Eliminar |
+| [x] | #9 | Dev 1 | Página `NotFound` (404) |
+| [x] | #10 | Dev 1 | Verificar CI y README de instalación |
+| [x] | #11 | Dev 2 | Panel de operaciones en Inicio |
+| [x] | #12 | Dev 3 | Validaciones: alertas y estilos condicionales |
+| [x] | #13 | Dev 3 | `useRef`: foco automático en el formulario |
+| [x] | #14 | Dev 4 | Custom hook `useLocalStorage` y persistencia |
+| [x] | #15 | Dev 4 | `AlertMessage` y notificaciones tipo toast |
+| [x] | #16 | Dev 5 | Lista: tabla, `Loading...` y botón Eliminar |
 
 ## Sprint 3 · 30/11 – 04/12
 
@@ -63,20 +63,20 @@ Escribe tu usuario de GitHub en la tabla del equipo la primera vez.
 
 | Estado | Issue | Dev | Tarea |
 |---|---|---|---|
-| [ ] | #17 | Dev 2 | Paleta de comandos, atajos y tema claro/oscuro |
-| [ ] | #18 | Dev 3 | Guardar y editar: `add()` y `update()` desde Registro |
-| [ ] | #19 | Dev 3 | Controles visuales y vista previa en vivo |
-| [ ] | #20 | Dev 4 | Modales, panel lateral e inicio de sesión simulado |
-| [ ] | #21 | Dev 5 | Vista de tarjetas, detalle y eliminación en lote |
-| [ ] | #22 | Dev 5 | Filtros en la URL y orden |
+| [x] | #17 | Dev 2 | Paleta de comandos, atajos y tema claro/oscuro |
+| [x] | #18 | Dev 3 | Guardar y editar: `add()` y `update()` desde Registro |
+| [x] | #19 | Dev 3 | Controles visuales y vista previa en vivo |
+| [x] | #20 | Dev 4 | Modales, panel lateral e inicio de sesión simulado |
+| [x] | #21 | Dev 5 | Vista de tarjetas, detalle y eliminación en lote |
+| [x] | #22 | Dev 5 | Filtros en la URL y orden |
 
 ## Entrega · 05/12 – 06/12
 
 | Estado | Issue | Dev | Tarea |
 |---|---|---|---|
-| [ ] | #23 | Dev 1 | Integración final y pruebas cruzadas |
-| [ ] | #24 | Dev 2 | Capturas de pantalla |
-| [ ] | #25 | Dev 4 | Documento PDF de entrega |
+| [x] | #23 | Dev 1 | Integración final y pruebas cruzadas |
+| [x] | #24 | Dev 2 | Capturas de pantalla |
+| [x] | #25 | Dev 4 | Documento PDF de entrega |
 
 ---
 
