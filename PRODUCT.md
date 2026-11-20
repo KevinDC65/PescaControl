@@ -23,11 +23,12 @@ Sistema de operaciones hecho para el muelle, no un CRUD genérico: cada desembar
 - Uso diario y repetitivo: buscar por embarcación, código o matrícula; filtrar por especie, puerto, estado y rango de fechas; registrar varios desembarques seguidos.
 - Datos en soles (S/) y toneladas (t), fechas en español, cifras con punto decimal.
 - "Requiere atención" = estado Observado o En descarga.
-- Sin backend real ni autenticación real: el inicio de sesión es simulado (solo un nombre).
+- Autenticación real con un servidor Express propio (`/api`): sesión en cookie httpOnly (el navegador nunca guarda el token), roles **Operador** (ver panel, registrar y editar) y **Jefe** (además eliminar, también en lote, y gestionar usuarios). La primera cuenta del sistema es Jefe.
+- Página principal pública (`/`) que explica el sistema con cifras agregadas en vivo (sin datos de embarcaciones ni personas); el panel de operaciones vive en `/panel`.
 
 ## Capabilities and Constraints
 
-- Rutas obligatorias: `/`, `/registro`, `/registro/:id`, `/lista`, `*` (404).
+- Rutas: `/` (pública), `/ingresar`, `/crear-cuenta`, `/panel`, `/registro`, `/registro/:id`, `/lista`, `/usuarios` (solo Jefe), `*` (404).
 - Stack fijo: React 19 + Vite, react-router-dom 7, Bootstrap 5.3 + Bootstrap Icons, Axios, json-server 0.17. Sin librerías nuevas, sin TypeScript ni Tailwind.
 - `apiService.js` es el único acceso HTTP (getAll, getById, add, update, remove) sobre `/desembarques`.
 - Modelo `Desembarque`: codigo (`DSB-000`, único), embarcacion (3–60), matricula (`AA-00000-AA`), especie (7), artePesca (5), puerto (5, de norte a sur), destino (2), toneladas (> 0, hasta 1500, 2 decimales), precioTonelada (> 0), fechaDesembarque (no futura), estado (Programado, En descarga, Descargado, Observado).

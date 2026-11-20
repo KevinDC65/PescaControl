@@ -197,15 +197,17 @@
         <strong>PescaControl</strong> permite a la jefatura de desembarque de un puerto pesquero
         registrar cada desembarque (embarcación, matrícula, especie, arte de pesca, toneladas,
         precio por tonelada, puerto, destino y estado de la descarga), consultarlos, editarlos y
-        eliminarlos, y seguir la operación desde un panel con indicadores. Los datos se guardan en un
-        servidor REST simulado con <code>json-server</code> a partir del archivo
-        <code>db.json</code>.
+        eliminarlos, y seguir la operación desde un panel con indicadores. Cuenta con una
+        <strong>página principal pública</strong> que explica el sistema, <strong>cuentas de usuario</strong>
+        con contraseña y dos <strong>roles</strong> (Operador y Jefe). Un servidor Express autentica cada
+        petición y sirve los desembarques de <code>db.json</code> mediante <code>json-server</code>.
       </p>
       <p>
         La interfaz funciona como una aplicación de trabajo: barra lateral de navegación (barra
         inferior en el celular), búsqueda global y comandos con <code>Ctrl+K</code>, atajos de
         teclado, notificaciones de confirmación, lista de desembarques en tabla o tarjetas, detalle
-        en un panel lateral, y tema claro y oscuro.
+        en un panel lateral, gestión de usuarios para el Jefe, y tema claro y oscuro. Todo el código
+        está escrito en TypeScript estricto.
       </p>
       <p>Cada desembarque tiene la siguiente estructura:</p>
       <table>
@@ -263,77 +265,110 @@
 
       <h3>Tecnologías</h3>
       <table>
-        <tr>
-          <th>Tecnología</th>
-          <th>Uso</th>
-        </tr>
-        <tr>
-          <td>React 19 + Vite</td>
-          <td>
-            Interfaz y entorno de desarrollo. Se usó Vite en lugar de
-            <code>create-react-app</code> porque este último está deprecado y no es compatible
-            con las versiones actuales de Node.
-          </td>
-        </tr>
-        <tr>
-          <td>react-router-dom 7</td>
-          <td>Rutas Inicio, Registro, Lista y página 404</td>
-        </tr>
-        <tr>
-          <td>Bootstrap 5.3 + Bootstrap Icons</td>
-          <td>Estilos, grid responsive, componentes de formulario y tema claro/oscuro</td>
-        </tr>
-        <tr>
-          <td>Axios</td>
-          <td>Peticiones HTTP en <code>services/apiService.js</code></td>
-        </tr>
-        <tr>
-          <td>json-server</td>
-          <td>API REST de prueba sobre <code>db.json</code> (puerto 3001)</td>
-        </tr>
+        <tr><th>Tecnología</th><th>Uso</th></tr>
+        <tr><td>React 19 + Vite + TypeScript</td><td>Interfaz y entorno de desarrollo. Se usó Vite en lugar de <code>create-react-app</code> (deprecado e incompatible con las versiones actuales de Node). TypeScript en modo estricto.</td></tr>
+        <tr><td>react-router-dom 7</td><td>Rutas públicas (principal, ingresar, crear cuenta) y protegidas (panel, registro, lista, usuarios)</td></tr>
+        <tr><td>Bootstrap 5.3 + Bootstrap Icons</td><td>Estilos, grid responsive, componentes de formulario y tema claro/oscuro</td></tr>
+        <tr><td>Motion</td><td>Animaciones de la página principal y de las páginas de acceso</td></tr>
+        <tr><td>Axios</td><td>Peticiones HTTP en <code>src/services/</code></td></tr>
+        <tr><td>Express 5</td><td>Servidor de la API: autenticación, roles y validación</td></tr>
+        <tr><td>bcryptjs, jsonwebtoken, helmet, express-rate-limit, zod</td><td>Contraseñas cifradas, sesión, cabeceras de seguridad, límite de intentos y validación</td></tr>
+        <tr><td>json-server</td><td>API REST de desembarques sobre <code>db.json</code>, detrás del servidor</td></tr>
+        <tr><td>Vitest + Supertest</td><td>Pruebas automáticas de la API (66 pruebas)</td></tr>
       </table>
     </section>
 
     <section>
-      <h2>2. Estructura del proyecto</h2>
+      <h2>2. Seguridad y autenticación</h2>
+      <p>
+        Cada persona entra con su correo y contraseña. La <strong>primera cuenta</strong> creada es
+        Jefe; las siguientes son Operador hasta que un Jefe las promueva.
+      </p>
+      <table>
+        <tr><th>Acción</th><th>Operador</th><th>Jefe</th></tr>
+        <tr><td>Ver panel y desembarques</td><td>Sí</td><td>Sí</td></tr>
+        <tr><td>Registrar y editar desembarques</td><td>Sí</td><td>Sí</td></tr>
+        <tr><td>Eliminar desembarques (individual y en lote)</td><td>No</td><td>Sí</td></tr>
+        <tr><td>Gestionar usuarios (rol y activación)</td><td>No</td><td>Sí</td></tr>
+      </table>
+      <h3>Medidas implementadas</h3>
+      <table>
+        <tr><th>Riesgo</th><th>Medida</th></tr>
+        <tr><td>Robo de contraseñas guardadas</td><td>Se guardan cifradas con <strong>bcrypt</strong> (coste 12) en <code>server/data/usuarios.json</code>, separado de <code>db.json</code>; la API nunca devuelve el hash.</td></tr>
+        <tr><td>Robo de la sesión desde el navegador</td><td>La sesión es un JWT de 8 h en una cookie <code>httpOnly</code> y <code>SameSite=Strict</code>: el JavaScript de la página no puede leerla y no viaja desde otros sitios.</td></tr>
+        <tr><td>Saltarse los permisos</td><td>El servidor verifica la sesión y vuelve a leer el rol del usuario en <strong>cada</strong> petición (403 si no alcanza). La interfaz solo oculta lo que el rol no puede hacer.</td></tr>
+        <tr><td>Adivinar contraseñas</td><td>Máximo 5 intentos fallidos de ingreso por equipo cada 15 minutos; mismo mensaje y mismo tiempo de respuesta si el correo no existe.</td></tr>
+        <tr><td>Datos inválidos o maliciosos</td><td>Validación en el servidor con zod y con las mismas reglas del formulario; cuerpo de 20 kB como máximo; cabeceras de seguridad con helmet.</td></tr>
+        <tr><td>Secretos expuestos</td><td>La clave de firma (<code>JWT_SECRET</code>) vive en <code>.env</code>, que no se sube al repositorio.</td></tr>
+      </table>
+      <pre><code>// server/rutas/auth.ts: ingreso
+const usuario = await almacen.buscarPorCorreo(correo)
+const coincide = await compare(contrasena, usuario?.hash ?? (await hashFicticio))
+if (!usuario || !coincide) throw errorNoAutenticado(MENSAJES.credencialesIncorrectas)
+if (!usuario.activo) throw errorProhibido(MENSAJES.cuentaDesactivada)
+ponerCookieSesion(res, usuario, sesion)   // cookie httpOnly + SameSite=Strict
+
+// server/rutas/desembarques.ts: solo el Jefe puede eliminar
+rutas.delete('/:id', autorizar('jefe'))</code></pre>
+      <h3>¿TypeScript hace más seguro el sistema?</h3>
+      <p>
+        No por sí solo. TypeScript agrega <strong>tipado estático</strong>: revisa antes de ejecutar que
+        cada dato tenga la forma esperada y evita errores de programación. Pero el navegador ejecuta
+        JavaScript y cualquier persona puede modificar lo que corre en su equipo. Por eso la seguridad
+        real está en el servidor: contraseñas cifradas, sesión en cookie protegida, permisos verificados
+        en cada petición y validación de los datos.
+      </p>
+      <p>En el navegador, <code>RutaProtegida</code> evita mostrar páginas del sistema sin sesión:</p>
+      <pre><code>function RutaProtegida({ rol, children }: PropsRutaProtegida) {
+  const { usuario, cargandoSesion, tieneRol } = useAppContext()
+  const { pathname, search } = useLocation()
+
+  if (cargandoSesion) return &lt;EsperaSesion /&gt;   // muestra "Loading..."
+  if (!usuario) return &lt;Navigate to={urlIngresoConRetorno(`${pathname}${search}`)} replace /&gt;
+  if (rol &amp;&amp; !tieneRol(rol)) return &lt;SinPermiso /&gt;
+  return children
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>3. Estructura del proyecto</h2>
       <pre><code>PescaControl/
-├── db.json                   Datos de prueba (colección "desembarques")
-├── src/
-│   ├── main.jsx              Punto de entrada: Bootstrap, Router y proveedores
-│   ├── App.jsx               Shell de la aplicación y definición de rutas
-│   ├── index.css             Tokens de diseño (tema claro y oscuro)
-│   ├── styles/               Estilos: base, shell, capas, especies y vistas
-│   ├── components/
-│   │   ├── Header.jsx        Título de la aplicación, migas y buscador
-│   │   ├── Navbar.jsx        Barra lateral y barra móvil (NavLink)
-│   │   ├── Footer.jsx        Pie de página
-│   │   ├── DesembarqueForm.jsx  Formulario controlado reutilizable (props)
-│   │   ├── AlertMessage.jsx  Mensajes de confirmación y error
-│   │   ├── Loading.jsx       Indicador "Loading..."
-│   │   ├── TablaDesembarques.jsx  Tabla ordenable con selección múltiple
-│   │   ├── TarjetaDesembarque.jsx Tarjeta de la lista y vista previa
-│   │   ├── DetalleDesembarque.jsx Detalle en panel lateral (Drawer.jsx)
-│   │   ├── Graficos.jsx      Toneladas por especie y por puerto
-│   │   ├── ConfirmModal.jsx  Confirmación de eliminación
-│   │   ├── LoginModal.jsx    Inicio de sesión simulado
-│   │   ├── PaletaComandos.jsx  Búsqueda y comandos con Ctrl+K
-│   │   └── ...               Modal, insignias, estados vacíos, etc.
+├── db.json                   Desembarques (servidos por json-server detrás del servidor)
+├── server/                   API Express + TypeScript
+│   ├── index.ts / app.ts     Arranque y configuración de middlewares y rutas
+│   ├── rutas/                auth, usuarios, publico y desembarques (json-server)
+│   ├── middleware/           autenticar, autorizar(rol) y errores
+│   ├── almacen/usuarios.ts   Usuarios con contraseña cifrada (nunca se expone el hash)
+│   ├── data/usuarios.json    Usuarios (separado de db.json)
+│   └── tests/                66 pruebas automáticas (Vitest + Supertest)
+├── src/                      Frontend React + TypeScript
+│   ├── main.tsx              Punto de entrada: Bootstrap, Router y proveedores
+│   ├── App.tsx               Rutas públicas y protegidas
 │   ├── pages/
-│   │   ├── Home.jsx          Panel de operaciones
-│   │   ├── Registro.jsx      Registro y edición de desembarques
-│   │   ├── Lista.jsx         Tabla/tarjetas, filtros y eliminación
-│   │   └── NotFound.jsx      Página 404
-│   ├── context/
-│   │   ├── AppContext.jsx    Usuario, tema y configuración (useContext)
-│   │   ├── ShellProvider.jsx Paneles abiertos y navegación protegida
-│   │   └── ToastProvider.jsx Notificaciones
-│   ├── hooks/
-│   │   ├── useLocalStorage.js  Custom hook de persistencia
-│   │   └── ...               Atajos, foco en modales, cambios sin guardar
-│   ├── services/
-│   │   └── apiService.js     Operaciones REST con Axios
-│   ├── constants/desembarques.js  Especies, artes, puertos, estados
-│   └── utils/                Validación, formato, operaciones y colores
+│   │   ├── Principal.tsx     Página principal pública animada
+│   │   ├── Ingresar.tsx      Inicio de sesión
+│   │   ├── CrearCuenta.tsx   Registro de cuenta
+│   │   ├── Panel.tsx         Panel de operaciones
+│   │   ├── Registro.tsx      Registro y edición de desembarques
+│   │   ├── Lista.tsx         Tabla/tarjetas, filtros y eliminación
+│   │   ├── Usuarios.tsx      Gestión de usuarios (Jefe)
+│   │   └── NotFound.tsx      Página 404
+│   ├── components/
+│   │   ├── Header.tsx        Título de la aplicación, migas y buscador
+│   │   ├── Navbar.tsx        Navegación (NavLink), usuario y rol
+│   │   ├── DesembarqueForm.tsx  Formulario controlado reutilizable (props)
+│   │   ├── RutaProtegida.tsx / Permiso.tsx  Acceso por sesión y por rol
+│   │   ├── AlertMessage.tsx  Mensajes de confirmación y error
+│   │   ├── Loading.tsx       Indicador "Loading..."
+│   │   ├── principal/        Secciones de la página principal
+│   │   ├── acceso/           Piezas de las páginas de acceso
+│   │   └── ...               Tabla, tarjetas, modales, paleta Ctrl+K, etc.
+│   ├── context/AppContext.tsx  Sesión, tema y configuración (useContext)
+│   ├── hooks/useLocalStorage.ts  Custom hook de persistencia (y otros hooks)
+│   ├── services/             http, apiService, authService, usuariosService, publicoService
+│   ├── types/                Tipos del dominio, usuario y API
+│   ├── constants/ y utils/   Catálogos, validación (compartida con el servidor), formato
+│   └── styles/               Estilos por área
 └── docs/                     Capturas e informe</code></pre>
 
       <h3>Responsabilidad de cada carpeta</h3>
@@ -367,6 +402,10 @@
           <td>Único punto de comunicación con el servidor REST.</td>
         </tr>
         <tr>
+          <td><code>server/</code></td>
+          <td>Autentica, verifica el rol en cada petición, valida los datos y guarda la información.</td>
+        </tr>
+        <tr>
           <td><code>utils/</code>, <code>constants/</code></td>
           <td>Funciones puras (validación, cálculos, formato) y catálogos del dominio.</td>
         </tr>
@@ -374,18 +413,19 @@
 
       <h3>Flujo de datos</h3>
       <p>
-        Las páginas piden los datos a <code>apiService</code>, que usa Axios para comunicarse con
+        Las páginas piden los datos a los servicios de <code>src/services/</code>, que usan Axios para
+        comunicarse con el servidor Express; este verifica la sesión y entrega los desembarques de
         json-server. Mientras esperan, muestran <code>Loading...</code> o esqueletos; al terminar,
         muestran el resultado o un mensaje de error con <code>AlertMessage</code>. Los indicadores
         del panel (toneladas, valor, toneladas por especie y por puerto) se calculan con funciones
-        puras de <code>utils/operaciones.js</code>. El usuario y el tema se leen desde
-        <code>AppContext</code>, que los conserva en <code>localStorage</code> mediante el custom
-        hook <code>useLocalStorage</code>.
+        puras de <code>utils/operaciones.ts</code>. El usuario de la sesión y el tema se leen desde
+        <code>AppContext</code>; el tema se conserva en <code>localStorage</code> mediante el custom
+        hook <code>useLocalStorage</code> y la sesión, en una cookie <code>httpOnly</code>.
       </p>
     </section>
 
     <section>
-      <h2>3. Componentes, props y hooks</h2>
+      <h2>4. Componentes, props y hooks</h2>
 
       <h3>Formulario controlado y props</h3>
       <p>
@@ -395,8 +435,8 @@
         <code>onSubmit</code>, <code>textoBoton</code>, <code>cargando</code>,
         <code>codigosExistentes</code>, <code>onCambio</code> y <code>onCancel</code>.
       </p>
-      <pre><code>// En DesembarqueForm.jsx: un solo objeto de estado para todos los campos
-function cambiarCampo(name, value) {
+      <pre><code>// En DesembarqueForm.tsx: un solo objeto de estado para todos los campos
+function cambiarCampo(name: CampoDesembarque, value: string) {
   const limpio = EN_MAYUSCULAS.includes(name) ? value.toUpperCase() : value
   const nuevos = { ...valores, [name]: limpio }
   setValores(nuevos)
@@ -404,12 +444,12 @@ function cambiarCampo(name, value) {
 }
 
 // onChange genérico: sirve para todos los campos gracias a su atributo name
-function manejarCambio(evento) {
+function manejarCambio(evento: ChangeEvent&lt;HTMLInputElement | HTMLSelectElement&gt;) {
   const { name, value } = evento.target
-  cambiarCampo(name, value)
+  if (esCampo(name)) cambiarCampo(name, value)
 }
 
-// En Registro.jsx (modo edición)
+// En Registro.tsx (modo edición)
 &lt;DesembarqueForm
   desembarqueInicial={desembarque}
   onSubmit={guardar}
@@ -460,29 +500,41 @@ destino?.focus()</code></pre>
 
       <h3>useContext</h3>
       <p>
-        <code>AppContext</code> comparte el usuario autenticado (inicio de sesión simulado), el
-        tema claro/oscuro y la configuración (moneda y unidad). La navegación y el panel de inicio
-        lo consumen con <code>useAppContext()</code>.
+        <code>AppContext</code> comparte la sesión real (usuario, rol y las funciones para ingresar,
+        crear cuenta y cerrar sesión), el tema claro/oscuro y la configuración (moneda y unidad). La
+        navegación, las páginas de acceso, <code>RutaProtegida</code> y el panel lo consumen con
+        <code>useAppContext()</code>. El token de sesión nunca pasa por el contexto: vive en una cookie
+        <code>httpOnly</code>.
       </p>
-      <pre><code>const [usuarioGuardado, setUsuario] = useLocalStorage('pescacontrol:usuario', null)
-const [temaGuardado, setTema] = useLocalStorage('pescacontrol:tema', temaDelSistema)
+      <pre><code>const [usuario, setUsuario] = useState&lt;Usuario | null&gt;(null)
+const [cargandoSesion, setCargandoSesion] = useState(true)
+const [temaGuardado, setTema] = useLocalStorage&lt;unknown&gt;('pescacontrol:tema', temaDelSistema)
+
+// Al cargar, se pregunta al servidor si hay una sesión válida (cookie httpOnly)
+useEffect(() =&gt; {
+  auth.obtenerSesion().then(setUsuario).finally(() =&gt; setCargandoSesion(false))
+}, [])
 
 useEffect(() =&gt; {
   document.documentElement.setAttribute('data-bs-theme', tema)
 }, [tema])
 
 // En cualquier componente:
-const { usuario, tema, alternarTema, config } = useAppContext()</code></pre>
+const { usuario, iniciarSesion, cerrarSesion, tema, alternarTema } = useAppContext()</code></pre>
 
       <h3>Custom hook useLocalStorage</h3>
       <p>
         Tiene la misma interfaz que <code>useState</code>, pero guarda el valor en
         <code>localStorage</code>. Lee el valor al iniciar, lo guarda cada vez que cambia y
-        tolera datos inválidos o almacenamiento no disponible. Se usa para el tema, el usuario, el
-        borrador del formulario, la vista de la lista y la barra lateral contraída.
+        tolera datos inválidos o almacenamiento no disponible. Se usa para el tema, el
+        borrador del formulario, la vista de la lista, la barra lateral contraída y la pausa del oleaje de
+        la página principal (nunca para datos de sesión).
       </p>
-      <pre><code>export function useLocalStorage(clave, valorInicial) {
-  const [valor, setValor] = useState(() =&gt; leerValor(clave, valorInicial))
+      <pre><code>export function useLocalStorage&lt;T&gt;(
+  clave: string,
+  valorInicial: ValorInicial&lt;T&gt;,
+): [T, Dispatch&lt;SetStateAction&lt;T&gt;&gt;] {
+  const [valor, setValor] = useState&lt;T&gt;(() =&gt; leerValor(clave, valorInicial))
 
   useEffect(() =&gt; {
     try {
@@ -497,12 +549,13 @@ const { usuario, tema, alternarTema, config } = useAppContext()</code></pre>
     </section>
 
     <section>
-      <h2>4. Servicios REST</h2>
+      <h2>5. Servicios REST</h2>
       <p>
-        Toda la comunicación con el servidor está en <code>src/services/apiService.js</code>. Se
-        crea una instancia de Axios con la URL base (configurable con la variable de entorno
-        <code>VITE_API_URL</code>) y cada operación devuelve directamente los datos de la
-        respuesta.
+        Toda la comunicación con el servidor está en <code>src/services/</code>. El archivo
+        <code>http.ts</code> crea una instancia de Axios con la URL base <code>/api</code> (en desarrollo
+        Vite la redirige al servidor Express) y <code>withCredentials</code> para que el navegador envíe
+        la cookie de sesión. Cada operación devuelve directamente los datos de la respuesta. Todas las
+        rutas de desembarques exigen sesión y eliminar exige el rol Jefe.
       </p>
       <table>
         <tr>
@@ -542,23 +595,35 @@ const { usuario, tema, alternarTema, config } = useAppContext()</code></pre>
           <td>Botón "Eliminar" (individual y en lote)</td>
         </tr>
       </table>
-      <pre><code>const RECURSO = '/desembarques'
-const api = axios.create({ baseURL: API_URL, timeout: 8000 })
+      <pre><code>// http.ts
+export const api = axios.create({ baseURL: API_URL, timeout: 8000, withCredentials: true })
 
-export function getAll() {
-  return solicitar('listar los desembarques', () =&gt; api.get(RECURSO))
+// apiService.ts
+export function getAll(): Promise&lt;Desembarque[]&gt; {
+  return solicitar('listar los desembarques', () =&gt; api.get&lt;Desembarque[]&gt;(RECURSO))
 }
 
-export function add(desembarque) {
+export function add(desembarque: DesembarqueNuevo): Promise&lt;Desembarque&gt; {
   const datos = sinId(desembarque)
   datos.fechaDesembarque = datos.fechaDesembarque || hoyISO()
-  return solicitar('registrar el desembarque', () =&gt; api.post(RECURSO, datos))
+  return solicitar('registrar el desembarque', () =&gt; api.post&lt;Desembarque&gt;(RECURSO, datos))
 }
 
-export async function remove(id) {
+export async function remove(id: string): Promise&lt;void&gt; {   // solo Jefe (403 para Operador)
   const ruta = rutaDesembarque(id)
-  await solicitar('eliminar el desembarque', () =&gt; api.delete(ruta))
+  await solicitar('eliminar el desembarque', () =&gt; api.delete&lt;unknown&gt;(ruta))
 }</code></pre>
+
+      <h3>Autenticación, usuarios y datos públicos</h3>
+      <table>
+        <tr><th>Método</th><th>Endpoint</th><th>Función</th><th>Uso</th></tr>
+        <tr><td>POST</td><td><code>/api/auth/registro</code></td><td><code>registrarse(datos)</code></td><td>Crear cuenta (la primera es Jefe)</td></tr>
+        <tr><td>POST</td><td><code>/api/auth/ingreso</code></td><td><code>iniciarSesion(credenciales)</code></td><td>Ingresar; responde con la cookie de sesión</td></tr>
+        <tr><td>POST</td><td><code>/api/auth/salida</code></td><td><code>cerrarSesion()</code></td><td>Cerrar sesión (borra la cookie)</td></tr>
+        <tr><td>GET</td><td><code>/api/auth/sesion</code></td><td><code>obtenerSesion()</code></td><td>Saber al cargar si hay sesión</td></tr>
+        <tr><td>GET / PATCH</td><td><code>/api/usuarios</code></td><td><code>listarUsuarios()</code>, <code>actualizarUsuario()</code></td><td>Gestión de usuarios (solo Jefe)</td></tr>
+        <tr><td>GET</td><td><code>/api/publico/resumen</code></td><td><code>obtenerResumenPublico()</code></td><td>Cifras de la página principal (sin sesión)</td></tr>
+      </table>
 
       <h3>Estados de carga y manejo de errores</h3>
       <p>
@@ -580,6 +645,18 @@ export async function remove(id) {
           </td>
         </tr>
         <tr>
+          <td>Sesión vencida o inexistente (401)</td>
+          <td>Se vuelve a "Ingresar" con el aviso "Tu sesión expiró…", y tras ingresar regresa a la misma página.</td>
+        </tr>
+        <tr>
+          <td>Rol sin permiso (403)</td>
+          <td>"Tu rol no tiene permiso para esta acción."</td>
+        </tr>
+        <tr>
+          <td>Datos inválidos (400)</td>
+          <td>"Revisa los datos del desembarque." y el error de cada campo junto al campo.</td>
+        </tr>
+        <tr>
           <td>Desembarque inexistente (404)</td>
           <td>"El desembarque no existe o fue eliminado."</td>
         </tr>
@@ -596,48 +673,42 @@ export async function remove(id) {
     </section>
 
     <section>
-      <h2>5. Capturas de la interfaz</h2>
+      <h2>6. Capturas de la interfaz</h2>
       <figure>
-        <img src="../capturas/01-home.png" alt="Panel de operaciones" />
-        <figcaption>
-          Figura 1. Inicio: toneladas desembarcadas, valor, desembarques que requieren atención y
-          toneladas por especie.
-        </figcaption>
+        <img src="../capturas/01-principal.png" alt="Página principal pública: portada con el océano y los accesos." />
+        <figcaption>Figura 1. Página principal pública: portada con el océano y los accesos.</figcaption>
       </figure>
       <figure>
-        <img src="../capturas/06-lista.png" alt="Lista de desembarques" />
-        <figcaption>
-          Figura 2. Desembarques en vista tabla: filtros, orden por columna, selección y acciones por
-          fila.
-        </figcaption>
+        <img src="../capturas/06-panel.png" alt="Panel de operaciones con sesión de Jefe." />
+        <figcaption>Figura 2. Panel de operaciones con sesión de Jefe.</figcaption>
       </figure>
     </section>
 
     <section>
       <div class="rejilla">
         <figure>
-          <img src="../capturas/02-registro-vacio.png" alt="Formulario vacío" />
-          <figcaption>Figura 3. Formulario de registro con foco en "Código".</figcaption>
+          <img src="../capturas/02-principal-secciones.png" alt="Página principal: cómo funciona el sistema." />
+          <figcaption>Figura 3. Página principal: cómo funciona el sistema.</figcaption>
         </figure>
         <figure>
-          <img src="../capturas/03-registro-validacion.png" alt="Validaciones" />
-          <figcaption>Figura 4. Validaciones con estilos condicionales y alerta.</figcaption>
+          <img src="../capturas/03-principal-cifras.png" alt="Página principal: cifras en vivo y carta del litoral." />
+          <figcaption>Figura 4. Página principal: cifras en vivo y carta del litoral.</figcaption>
         </figure>
         <figure>
-          <img src="../capturas/04-registro-exito.png" alt="Registro exitoso" />
-          <figcaption>Figura 5. Confirmación tras registrar un desembarque.</figcaption>
+          <img src="../capturas/04-crear-cuenta.png" alt="Crear cuenta con validación y medidor de fortaleza." />
+          <figcaption>Figura 5. Crear cuenta con validación y medidor de fortaleza.</figcaption>
         </figure>
         <figure>
-          <img src="../capturas/05-lista-loading.png" alt="Cargando" />
-          <figcaption>Figura 6. Indicador "Loading..." mientras se obtienen los datos.</figcaption>
+          <img src="../capturas/05-ingresar-error.png" alt="Ingresar con credenciales incorrectas." />
+          <figcaption>Figura 6. Ingresar con credenciales incorrectas.</figcaption>
         </figure>
         <figure>
-          <img src="../capturas/07-eliminar-confirmacion.png" alt="Confirmar eliminación" />
-          <figcaption>Figura 7. Confirmación antes de eliminar un desembarque.</figcaption>
+          <img src="../capturas/07-registro-validacion.png" alt="Validaciones con estilos condicionales y alerta." />
+          <figcaption>Figura 7. Validaciones con estilos condicionales y alerta.</figcaption>
         </figure>
         <figure>
-          <img src="../capturas/08-edicion.png" alt="Edición" />
-          <figcaption>Figura 8. Formulario en modo edición.</figcaption>
+          <img src="../capturas/08-registro-exito.png" alt="Confirmación tras registrar un desembarque." />
+          <figcaption>Figura 8. Confirmación tras registrar un desembarque.</figcaption>
         </figure>
       </div>
     </section>
@@ -645,30 +716,59 @@ export async function remove(id) {
     <section>
       <div class="rejilla">
         <figure>
-          <img src="../capturas/09-error-servidor.png" alt="Error de servidor" />
-          <figcaption>Figura 9. Mensaje de error con el servidor detenido.</figcaption>
+          <img src="../capturas/09-lista-loading.png" alt="Indicador "Loading..." mientras se obtienen los datos." />
+          <figcaption>Figura 9. Indicador "Loading..." mientras se obtienen los datos.</figcaption>
         </figure>
         <figure>
-          <img src="../capturas/10-tema-oscuro.png" alt="Tema oscuro" />
-          <figcaption>Figura 10. Tema oscuro con usuario autenticado (useContext).</figcaption>
+          <img src="../capturas/10-lista.png" alt="Desembarques en vista tabla (Jefe)." />
+          <figcaption>Figura 10. Desembarques en vista tabla (Jefe).</figcaption>
         </figure>
         <figure>
-          <img src="../capturas/12-404.png" alt="Página no encontrada" />
-          <figcaption>Figura 11. Página 404 para rutas inexistentes.</figcaption>
+          <img src="../capturas/11-eliminar-confirmacion.png" alt="Confirmación antes de eliminar (solo Jefe)." />
+          <figcaption>Figura 11. Confirmación antes de eliminar (solo Jefe).</figcaption>
         </figure>
         <figure>
-          <img src="../capturas/13-db-json.png" alt="API REST" />
-          <figcaption>Figura 12. Respuesta de GET /desembarques en json-server.</figcaption>
+          <img src="../capturas/12-edicion.png" alt="Formulario en modo edición." />
+          <figcaption>Figura 12. Formulario en modo edición.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/13-operador.png" alt="Vista del Operador: sin Eliminar ni Usuarios." />
+          <figcaption>Figura 13. Vista del Operador: sin Eliminar ni Usuarios.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/14-usuarios.png" alt="Gestión de usuarios y roles (Jefe)." />
+          <figcaption>Figura 14. Gestión de usuarios y roles (Jefe).</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <div class="rejilla">
+        <figure>
+          <img src="../capturas/15-error-servidor.png" alt="Mensaje de error con la API detenida." />
+          <figcaption>Figura 15. Mensaje de error con la API detenida.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/16-tema-oscuro.png" alt="Sistema en tema oscuro." />
+          <figcaption>Figura 16. Sistema en tema oscuro.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/18-404.png" alt="Página 404 para rutas inexistentes." />
+          <figcaption>Figura 17. Página 404 para rutas inexistentes.</figcaption>
+        </figure>
+        <figure>
+          <img src="../capturas/19-api-401.png" alt="La API rechaza peticiones sin sesión (401)." />
+          <figcaption>Figura 18. La API rechaza peticiones sin sesión (401).</figcaption>
         </figure>
       </div>
       <figure class="movil">
-        <img src="../capturas/11-movil.png" alt="Vista móvil" />
-        <figcaption>Figura 13. Vista móvil con la barra inferior.</figcaption>
+        <img src="../capturas/17-movil.png" alt="Vista móvil." />
+        <figcaption>Figura 19. Vista móvil.</figcaption>
       </figure>
     </section>
 
     <section>
-      <h2>6. Verificación de requisitos</h2>
+      <h2>7. Verificación de requisitos</h2>
       <table>
         <tr>
           <th>Requisito de la práctica</th>
@@ -676,63 +776,71 @@ export async function remove(id) {
         </tr>
         <tr>
           <td>Proyecto React con Bootstrap</td>
-          <td><code>main.jsx</code>, <code>index.css</code></td>
+          <td><code>main.tsx</code>, <code>index.css</code></td>
         </tr>
         <tr>
           <td>App con encabezado y título</td>
-          <td><code>App.jsx</code>, <code>Header.jsx</code></td>
+          <td><code>App.tsx</code>, <code>Header.tsx</code></td>
         </tr>
         <tr>
           <td>Rutas Home, Registro y Lista</td>
-          <td><code>App.jsx</code> (react-router-dom)</td>
+          <td><code>App.tsx</code> (react-router-dom): <code>/</code> página principal, <code>/registro</code>, <code>/lista</code></td>
         </tr>
         <tr>
           <td>Navbar con Link</td>
-          <td><code>Navbar.jsx</code> (NavLink)</td>
+          <td><code>Navbar.tsx</code> (NavLink)</td>
         </tr>
         <tr>
           <td>Formulario controlado y props</td>
-          <td><code>DesembarqueForm.jsx</code>, <code>Registro.jsx</code></td>
+          <td><code>DesembarqueForm.tsx</code>, <code>Registro.tsx</code></td>
         </tr>
         <tr>
           <td>Validación con alertas y estilos condicionales</td>
-          <td><code>DesembarqueForm.jsx</code>, <code>validarDesembarque.js</code></td>
+          <td><code>DesembarqueForm.tsx</code>, <code>validarDesembarque.ts</code></td>
         </tr>
         <tr>
           <td>useState, useEffect, useRef, useContext</td>
-          <td>Páginas, <code>DesembarqueForm.jsx</code>, <code>AppContext.jsx</code></td>
+          <td>Páginas, <code>DesembarqueForm.tsx</code>, <code>AppContext.tsx</code></td>
         </tr>
         <tr>
           <td>Custom hook con localStorage</td>
-          <td><code>useLocalStorage.js</code></td>
+          <td><code>useLocalStorage.ts</code></td>
         </tr>
         <tr>
           <td>apiService con getAll, add, remove, update</td>
-          <td><code>services/apiService.js</code></td>
+          <td><code>services/apiService.ts</code></td>
         </tr>
         <tr>
           <td>Axios para listar y agregar</td>
-          <td><code>Lista.jsx</code>, <code>Home.jsx</code>, <code>Registro.jsx</code></td>
+          <td><code>Lista.tsx</code>, <code>Panel.tsx</code>, <code>Registro.tsx</code></td>
         </tr>
         <tr>
           <td>Botón Eliminar con DELETE</td>
-          <td><code>Lista.jsx</code>, <code>ConfirmModal.jsx</code></td>
+          <td><code>Lista.tsx</code>, <code>ConfirmModal.tsx</code></td>
         </tr>
         <tr>
           <td>Indicador Loading...</td>
-          <td><code>Loading.jsx</code></td>
+          <td><code>Loading.tsx</code></td>
         </tr>
         <tr>
           <td>Mensajes de confirmación y error</td>
-          <td><code>AlertMessage.jsx</code></td>
+          <td><code>AlertMessage.tsx</code></td>
         </tr>
         <tr>
           <td>db.json con datos de prueba</td>
           <td>16 desembarques en <code>db.json</code></td>
         </tr>
+        <tr>
+          <td>Adicional: cuentas, contraseñas cifradas y roles</td>
+          <td><code>server/</code>, <code>AppContext.tsx</code>, <code>RutaProtegida.tsx</code>, <code>Permiso.tsx</code></td>
+        </tr>
+        <tr>
+          <td>Adicional: TypeScript estricto y pruebas automáticas</td>
+          <td><code>tsconfig*.json</code>, <code>server/tests/</code> (66 pruebas)</td>
+        </tr>
       </table>
 
-      <h2>7. Conclusiones</h2>
+      <h2>8. Conclusiones</h2>
       <p>
         PescaControl integra los conceptos principales de React: componentes reutilizables
         comunicados por props, rutas, formularios controlados con validación, y los hooks
@@ -740,13 +848,22 @@ export async function remove(id) {
         <code>useContext</code>, además de un custom hook para la persistencia local.
       </p>
       <p>
-        Concentrar las peticiones en <code>apiService.js</code> y los cálculos en funciones puras
+        Concentrar las peticiones en <code>src/services/</code> y los cálculos en funciones puras
         permitió que las páginas no dependan de los detalles de Axios ni de las URL, y facilitó
         mostrar estados de carga, indicadores de operación y mensajes de error uniformes. Bootstrap
-        aportó un diseño responsive y el tema oscuro sin librerías adicionales.
+        aportó un diseño responsive y el tema oscuro.
       </p>
       <p>
-        Para ejecutar el proyecto: <code>npm install</code> y luego <code>npm run dev:all</code>,
+        La segunda versión agregó una página principal pública, cuentas con contraseña cifrada y roles.
+        La lección principal fue que la seguridad se decide en el servidor: el navegador solo muestra u
+        oculta acciones, mientras que el servidor verifica la sesión y el rol en cada petición. Migrar a
+        TypeScript no cambió eso, pero redujo errores al detectar en el editor datos con una forma
+        incorrecta, y permitió compartir las mismas reglas de validación entre el formulario y el
+        servidor.
+      </p>
+      <p>
+        Para ejecutar el proyecto: <code>npm install</code>, copiar <code>.env.example</code> como
+        <code>.env</code>, <code>npm run seed</code> (usuarios de demostración) y <code>npm run dev:all</code>,
         que levanta la API en el puerto 3001 y la aplicación en el puerto 5173.
       </p>
     </section>

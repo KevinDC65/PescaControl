@@ -9,23 +9,29 @@
 | 3 | Capturas de pantalla | `docs/capturas/` (#24) |
 | 4 | Documento PDF | `docs/PescaControl_PC3.pdf` (#25) |
 
-## Capturas requeridas (#24)
+## Capturas requeridas (#46)
 
-Nombre: `NN-descripcion.png`, a 1280 px de ancho (y una móvil a 375 px).
+Nombre: `NN-descripcion.png`, a 1280 px de ancho (las móviles a 375 px).
 
-1. `01-home.png` — Inicio con el panel de operaciones.
-2. `02-registro-vacio.png` — Formulario vacío con foco en el primer campo.
-3. `03-registro-validacion.png` — Errores de validación (campos en rojo + alerta).
-4. `04-registro-exito.png` — Mensaje de confirmación tras guardar.
-5. `05-lista-loading.png` — Indicador `Loading...` (simular red lenta en DevTools).
-6. `06-lista.png` — Tabla de desembarques.
-7. `07-eliminar-confirmacion.png` — Modal/confirmación de eliminación.
-8. `08-edicion.png` — Formulario en modo edición.
-9. `09-error-servidor.png` — Mensaje de error con json-server apagado.
-10. `10-tema-oscuro.png` — App en tema oscuro con usuario logueado.
-11. `11-movil.png` — Vista móvil con menú desplegado.
-12. `12-404.png` — Página no encontrada.
-13. `13-db-json.png` — `http://localhost:3001/desembarques` en el navegador.
+1. `01-principal.png` — Página principal: portada con el océano y los botones de acceso.
+2. `02-principal-secciones.png` — Página principal: "Cómo funciona" o "Módulos".
+3. `03-principal-cifras.png` — Página principal: cifras en vivo o carta del litoral.
+4. `04-crear-cuenta.png` — Crear cuenta con validación y medidor de fortaleza.
+5. `05-ingresar-error.png` — Ingresar con el mensaje "Correo o contraseña incorrectos.".
+6. `06-panel.png` — Panel de operaciones con sesión de Jefe.
+7. `07-registro-validacion.png` — Errores de validación del formulario.
+8. `08-registro-exito.png` — Confirmación tras registrar un desembarque.
+9. `09-lista-loading.png` — Indicador `Loading...`.
+10. `10-lista.png` — Tabla de desembarques (Jefe).
+11. `11-eliminar-confirmacion.png` — Confirmación de eliminación (Jefe).
+12. `12-edicion.png` — Formulario en modo edición.
+13. `13-operador.png` — Lista vista por un Operador (sin Eliminar ni Usuarios).
+14. `14-usuarios.png` — Gestión de usuarios (Jefe).
+15. `15-error-servidor.png` — Mensaje de error con la API detenida.
+16. `16-tema-oscuro.png` — Sistema en tema oscuro.
+17. `17-movil.png` — Página principal o sistema en móvil.
+18. `18-404.png` — Página no encontrada.
+19. `19-api-401.png` — `http://localhost:3001/api/desembarques` sin sesión: respuesta 401.
 
 ## Cómo regenerar el PDF
 
@@ -36,14 +42,15 @@ El PDF se exporta desde [informe/informe.html](informe/informe.html). Para actua
 3. Imprime con `Ctrl + P` → *Guardar como PDF*, tamaño A4, márgenes predeterminados y "Gráficos de fondo" activado.
 4. Guarda el resultado como `docs/PescaControl_PC3.pdf`.
 
-## Contenido del PDF (#25)
+## Contenido del PDF (#25, #47)
 
-Breve (6–10 páginas), en español:
+Breve (8–12 páginas), en español:
 
 1. **Portada:** curso, docente, integrantes, fecha.
 2. **Descripción:** qué es PescaControl y para qué sirve.
-3. **Estructura del proyecto:** árbol de carpetas (de `ESTRUCTURA.md`) y explicación de cada carpeta.
-4. **Componentes y hooks:** dónde se usa `useState`, `useEffect`, `useRef`, `useContext` y `useLocalStorage`, con un fragmento de código corto de cada uno.
-5. **Servicios REST:** tabla de `apiService.js` (método, endpoint, función), cómo se usa Axios, manejo de `Loading...` y de errores.
-6. **Capturas de interfaz:** las del punto anterior con un pie de una línea.
-7. **Conclusiones** y reparto de trabajo (tabla del equipo con sus issues).
+3. **Seguridad y autenticación:** cuentas, roles, contraseñas cifradas, sesión en cookie, límite de intentos; y por qué TypeScript no es una medida de seguridad por sí solo.
+4. **Estructura del proyecto:** árbol de carpetas (de `ESTRUCTURA.md`) y explicación de cada carpeta.
+5. **Componentes y hooks:** dónde se usa `useState`, `useEffect`, `useRef`, `useContext` y `useLocalStorage`, con un fragmento de código corto de cada uno.
+6. **Servicios REST:** tablas de los servicios (`apiService.ts`, `authService.ts`, `usuariosService.ts`, `publicoService.ts`), cómo se usa Axios, manejo de `Loading...` y de errores.
+7. **Capturas de interfaz:** las del punto anterior con un pie de una línea.
+8. **Conclusiones** y reparto de trabajo (tabla del equipo con sus issues).

@@ -1,8 +1,8 @@
 # PescaControl
 
-**Sistema de Gestión de Operaciones Pesqueras y Desembarque**, desarrollado en **React** como práctica integradora (PC3) del curso en la Universidad Tecnológica del Perú (UTP).
+**Sistema de Gestión de Operaciones Pesqueras y Desembarque**, desarrollado en **React + TypeScript** como práctica integradora (PC3) del curso en la Universidad Tecnológica del Perú (UTP).
 
-Permite registrar cada desembarque en los puertos del litoral peruano (embarcación, matrícula, especie, arte de pesca, toneladas, precio, puerto, destino y estado de la descarga), consultarlos, editarlos y eliminarlos contra una API REST simulada con **json-server**, y seguir la operación desde un panel con indicadores.
+Permite registrar cada desembarque en los puertos del litoral peruano (embarcación, matrícula, especie, arte de pesca, toneladas, precio, puerto, destino y estado de la descarga), consultarlos, editarlos y eliminarlos, y seguir la operación desde un panel con indicadores. Incluye una página principal pública, cuentas de usuario con contraseña y roles (**Operador** y **Jefe**), y un servidor **Express** que protege la API REST de **json-server**.
 
 ![CI](https://github.com/KevinDC65/PescaControl/actions/workflows/ci.yml/badge.svg)
 
@@ -10,14 +10,21 @@ Permite registrar cada desembarque en los puertos del litoral peruano (embarcaci
 
 | Tecnología | Uso |
 |---|---|
-| React 19 + Vite | Interfaz y entorno de desarrollo |
-| react-router-dom 7 | Rutas: Inicio, Registro, Lista |
+| React 19 + Vite + **TypeScript** (estricto) | Interfaz y entorno de desarrollo |
+| react-router-dom 7 | Rutas públicas y protegidas |
 | Bootstrap 5 + Bootstrap Icons | Estilos y componentes visuales |
-| Axios | Cliente HTTP en `src/services/apiService.js` |
-| json-server 0.17 | API REST falsa a partir de `db.json` |
+| Motion (para React) | Animaciones de la página principal y del acceso |
+| Axios | Cliente HTTP en `src/services/` |
+| Express 5 | Servidor de la API: autenticación, roles y validación |
+| bcryptjs + jsonwebtoken | Contraseñas cifradas y sesión en cookie `httpOnly` |
+| helmet + express-rate-limit + zod | Cabeceras de seguridad, límite de intentos y validación de entrada |
+| json-server 0.17 | API REST de desembarques a partir de `db.json`, detrás del servidor |
+| Vitest + Supertest | Pruebas automáticas de la API |
 | oxlint + Prettier | Calidad y formato de código |
 
-> **¿Por qué Vite y no `create-react-app`?** La práctica menciona CRA, pero CRA está deprecado oficialmente por el equipo de React y falla con versiones actuales de Node. Vite cumple el mismo objetivo (crear y servir un proyecto React) y es la herramienta recomendada hoy. La estructura de `src/` sigue la propuesta de la práctica.
+> **¿Por qué Vite y no `create-react-app`?** La práctica menciona CRA, pero CRA está deprecado oficialmente por el equipo de React y falla con versiones actuales de Node. Vite cumple el mismo objetivo y es la herramienta recomendada hoy. La estructura de `src/` sigue la propuesta de la práctica.
+
+> **¿Por qué TypeScript?** Aporta **tipado estático**: detecta errores antes de ejecutar y hace el código más fácil de mantener. No es una medida de seguridad por sí sola (en el navegador todo es JavaScript); la seguridad la da el servidor. Detalle en [PROYECTO.md](PROYECTO.md#seguridad).
 
 ## Requisitos
 
@@ -30,7 +37,13 @@ Permite registrar cada desembarque en los puertos del litoral peruano (embarcaci
 git clone https://github.com/KevinDC65/PescaControl.git
 cd PescaControl
 npm install
+cp .env.example .env
+npm run seed
 ```
+
+- Edita `.env` y cambia `JWT_SECRET` por una cadena larga y aleatoria (mínimo 32 caracteres). Sin `.env` el servidor arranca igual en desarrollo con un secreto temporal (las sesiones se pierden al reiniciarlo).
+- `npm run seed` crea dos **usuarios de demostración** con los correos y contraseñas de `DEMO_*` en `.env` (por defecto los de `.env.example`): un **Jefe** y un **Operador**. Son solo para pruebas locales.
+- Si no ejecutas el seed, la **primera cuenta** que crees en `/crear-cuenta` será Jefe.
 
 ## Ejecutar
 
@@ -39,34 +52,38 @@ npm run dev:all
 ```
 
 Levanta a la vez:
-- Frontend: http://localhost:5173
-- API (json-server): http://localhost:3001/desembarques
+- Aplicación: http://localhost:5173 (página principal pública; el sistema está en `/panel` tras ingresar)
+- API (Express): http://localhost:3001/api (Vite redirige `/api` a este puerto)
 
 | Script | Qué hace |
 |---|---|
 | `npm run dev` | Solo el frontend |
-| `npm run server` | Solo la API (`db.json` en el puerto 3001) |
+| `npm run server` | Solo la API (Express + json-server, puerto `API_PORT`, 3001 por defecto) |
 | `npm run dev:all` | Frontend + API |
+| `npm run seed` | Crea los usuarios de demostración (no duplica si ya existen) |
+| `npm test` | Pruebas automáticas de la API (Vitest + Supertest) |
+| `npm run typecheck` | Verificación de tipos de TypeScript |
 | `npm run lint` | Revisa el código con oxlint |
-| `npm run format` | Formatea `src/` con Prettier |
-| `npm run build` | Compila para producción en `dist/` |
+| `npm run format` | Formatea `src/` y `server/` con Prettier |
+| `npm run build` | Compila el frontend para producción en `dist/` |
 
 ## Funcionalidades
 
-- **Shell de aplicación:** barra lateral contraíble con contadores, barra inferior en móvil, paleta de comandos (`Ctrl+K`), atajos de teclado (`?` muestra la ayuda) y notificaciones tipo toast.
-- **Inicio (panel de operaciones):** toneladas desembarcadas, valor desembarcado, desembarques y los que requieren atención; toneladas por especie y por puerto (carta del litoral de Paita a Ilo); listas de "Requieren atención" y "Últimos desembarques".
-- **Registro:** formulario controlado en secciones (Embarcación, Captura, Operación) con validación en vivo, especie y estado como opciones visuales, valor estimado en vivo, sugerencia del prefijo de matrícula según el puerto, vista previa de la tarjeta, guardado con `Ctrl+S`, borrador en `localStorage` y aviso al salir con cambios sin guardar.
-- **Edición:** `/registro/:id` carga el desembarque y guarda con `PUT`.
-- **Desembarques:** vista tabla (orden por columna, selección y eliminación en lote) o tarjetas; búsqueda por embarcación, código o matrícula y filtros por especie, puerto, estado y rango de fechas guardados en la URL; detalle en panel lateral.
-- **Sesión y tema:** inicio de sesión simulado y tema claro/oscuro compartidos con `useContext` y persistidos.
-- **Estados:** indicador `Loading...`, esqueletos de carga, mensajes de éxito y error, página 404 y diseño adaptado a móvil.
+- **Página principal pública** (`/`): explica el sistema con animaciones (océano, embarcación, pasos, módulos, cifras en vivo, carta del litoral y roles) y lleva a crear cuenta o ingresar.
+- **Acceso** (`/ingresar`, `/crear-cuenta`): formularios con validación en vivo, medidor de fortaleza de contraseña, mostrar/ocultar contraseña y mensajes claros (credenciales incorrectas, cuenta desactivada, demasiados intentos).
+- **Roles:** el **Operador** registra y edita desembarques; el **Jefe** además elimina y gestiona usuarios en `/usuarios` (cambiar rol, activar/desactivar). El servidor aplica los permisos y la interfaz oculta lo que el rol no puede hacer.
+- **Shell del sistema:** barra lateral contraíble con contadores, usuario y rol; barra inferior en móvil; paleta de comandos (`Ctrl+K`); atajos de teclado (`?` muestra la ayuda) y notificaciones tipo toast.
+- **Panel de operaciones** (`/panel`): toneladas desembarcadas, valor desembarcado, desembarques y los que requieren atención; toneladas por especie y por puerto; listas de "Requieren atención" y "Últimos desembarques".
+- **Registro y edición** (`/registro`, `/registro/:id`): formulario controlado en secciones con validación en vivo (también validado por el servidor), valor estimado, vista previa, guardado con `Ctrl+S`, borrador en `localStorage` y aviso al salir con cambios sin guardar.
+- **Desembarques** (`/lista`): tabla o tarjetas; búsqueda y filtros guardados en la URL; detalle en panel lateral; eliminación individual y en lote (Jefe).
+- **Estados:** `Loading...`, esqueletos, mensajes de éxito y error, página 404, tema claro/oscuro y diseño adaptado a móvil.
 
 | Atajo | Acción |
 |---|---|
 | `Ctrl+K` | Paleta de comandos y búsqueda de desembarques |
 | `N` | Registrar desembarque |
 | `/` | Buscar en la lista |
-| `G` y luego `I` / `L` / `R` | Ir a Inicio / Lista / Registro |
+| `G` y luego `I` / `L` / `R` / `U` | Ir al Panel / Lista / Registro / Usuarios (Jefe) |
 | `Ctrl+S` | Guardar el formulario |
 | `?` | Ayuda de atajos |
 
@@ -77,10 +94,14 @@ Levanta a la vez:
 | Síntoma | Solución |
 |---|---|
 | "No se pudo conectar con el servidor" | La API no está levantada: usa `npm run dev:all` o `npm run server` |
-| `Port 3001 is already in use` | Cierra el otro json-server o cambia el puerto en `package.json` y en `.env` (`VITE_API_URL`) |
+| `EADDRINUSE` en el puerto 3001 | Cierra el otro servidor o cambia `API_PORT` en `.env` y el destino del proxy en `vite.config.ts` |
+| "JWT_SECRET: debe tener al menos 32 caracteres" | Usa en `.env` un secreto más largo |
+| Al recargar se pierde la sesión | Sin `.env` el secreto es temporal: crea `.env` a partir de `.env.example` |
+| "Demasiados intentos" | El límite es de 5 intentos cada 15 minutos por equipo; espera o reinicia el servidor en desarrollo |
 | Vite usa otro puerto (5174…) | El 5173 está ocupado; la app funciona igual en el puerto que indique la consola |
 | Error de sintaxis al ejecutar Vite | Actualiza Node a 20.19 o superior |
-| `db.json` aparece modificado tras probar | json-server reescribe el archivo; revisa con `git diff db.json` y restaura los 16 desembarques originales con `git checkout -- db.json` |
+| `db.json` aparece modificado tras probar | json-server reescribe el archivo; revisa con `git diff db.json` y restaura los 16 desembarques originales con `git checkout -- db.json` (reinicia el servidor después) |
+| Quiero empezar sin usuarios | Deja `server/data/usuarios.json` como `{ "usuarios": [] }` y reinicia el servidor |
 
 ## Entrega
 
