@@ -1,1 +1,262 @@
-/* TODO #2: pendiente de implementar. */
+/*
+ * Estilos globales de PescaControl.
+ * Bootstrap 5.3 es la base (rejilla, utilidades, formularios, data-bs-theme); aquí se
+ * personaliza con variables --bs-* y se definen los tokens --pc-* del sistema visual.
+ * La documentación completa del sistema está en DESIGN.md.
+ *
+ * Mundo visual: el muelle de desembarque al amanecer y la carta náutica.
+ *   Barra lateral en océano nocturno, fondo de espuma fría, superficies blancas.
+ *   El azul de mar es la acción; el naranja de boya solo señala lo que requiere atención;
+ *   el verde agua confirma. La arena es la tierra de la carta (litoral de Inicio).
+ *   Cada especie tiene su color en la serie de datos (styles/especies.css).
+ * Tipografía: Saira (cifras, títulos, códigos y matrículas; ejes de ancho y peso) y
+ *   Barlow (interfaz y texto corrido).
+ * Movimiento: 140–320 ms con curvas ease-out fuertes; prefers-reduced-motion respetado.
+ *
+ * Archivos importados (en este orden):
+ *   styles/base.css       Tipografía, controles de Bootstrap, utilidades y estados de carga.
+ *   styles/shell.css      Barra lateral, cabecera, barra inferior móvil y pie.
+ *   styles/capas.css      Modales, panel lateral, paleta de comandos y toasts.
+ *   styles/especies.css   Color de cada especie, insignias y textura marina de las tarjetas.
+ *   styles/vistas.css     Inicio, Desembarques, Registro y 404.
+ */
+
+@import './styles/base.css';
+@import './styles/shell.css';
+@import './styles/capas.css';
+@import './styles/especies.css';
+@import './styles/vistas.css';
+
+:root,
+[data-bs-theme='light'] {
+  --pc-fondo: #eef3f4;
+  --pc-superficie: #ffffff;
+  --pc-superficie-2: #e6edef;
+  --pc-superficie-3: #d8e2e5;
+  --pc-texto: #0f2533;
+  --pc-texto-suave: #45606e;
+  --pc-texto-tenue: #526a76;
+  --pc-borde: #d5e0e3;
+  --pc-borde-fuerte: #b3c4ca;
+
+  /* Azul de mar: acción principal, enlaces, foco y selección. */
+  --pc-mar: #0b5277;
+  --pc-mar-hover: #083f5c;
+  --pc-mar-rgb: 11, 82, 119;
+  --pc-mar-suave: #e0edf3;
+  --pc-mar-texto: #093c58;
+  --pc-sobre-mar: #ffffff;
+
+  /* Naranja de boya: solo marca lo que requiere atención. */
+  --pc-boya: #e8611a;
+  --pc-boya-rgb: 232, 97, 26;
+  --pc-boya-texto: #9a3c08;
+  --pc-boya-suave: #fdeee3;
+  --pc-boya-borde: #f4c3a1;
+
+  /* Océano nocturno: barra lateral y pizarra de Inicio. */
+  --pc-profundo: #0c2b3e;
+  --pc-profundo-texto: #dfe9ec;
+  --pc-profundo-suave: #a7c3cf;
+  --pc-isobata: rgba(167, 214, 233, 0.26);
+
+  /* Arena: la tierra en la carta del litoral. */
+  --pc-arena: #ece3cf;
+  --pc-arena-borde: #d6c7a3;
+  --pc-arena-texto: #6b5a33;
+
+  --pc-riel: #0a1e2c;
+  --pc-riel-hover: rgba(255, 255, 255, 0.07);
+  --pc-riel-activo: rgba(255, 255, 255, 0.12);
+  --pc-riel-texto: #dfe9ec;
+  --pc-riel-suave: #93abb6;
+  --pc-riel-borde: rgba(255, 255, 255, 0.09);
+  --pc-riel-acento: #6cc3e8;
+
+  --pc-exito: #1d6f5f;
+  --pc-exito-suave: #def1ec;
+  --pc-info: #0e6e8c;
+  --pc-peligro: #b4232f;
+  --pc-peligro-hover: #8e1b25;
+  --pc-peligro-texto: #8e1b25;
+  --pc-peligro-suave: #fbe7e8;
+
+  --pc-fuente: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --pc-fuente-cifras: 'Saira', 'Barlow', system-ui, sans-serif;
+  --pc-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --pc-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --pc-sombra-1: 0 1px 2px rgba(15, 37, 51, 0.06);
+  --pc-sombra-2: 0 1px 2px rgba(15, 37, 51, 0.05), 0 10px 28px -14px rgba(15, 37, 51, 0.3);
+  --pc-sombra-3: 0 2px 6px rgba(15, 37, 51, 0.08), 0 28px 64px -24px rgba(15, 37, 51, 0.48);
+  --pc-velo: rgba(5, 18, 27, 0.45);
+  --pc-alto-cabecera: 3.75rem;
+  --pc-alto-tabbar: 4rem;
+
+  --bs-font-sans-serif: var(--pc-fuente);
+  --bs-body-font-family: var(--pc-fuente);
+  --bs-body-font-size: 0.9688rem;
+  --bs-body-line-height: 1.5;
+  --bs-body-bg: var(--pc-fondo);
+  --bs-body-bg-rgb: 238, 243, 244;
+  --bs-body-color: var(--pc-texto);
+  --bs-body-color-rgb: 15, 37, 51;
+  --bs-emphasis-color: #071923;
+  --bs-heading-color: var(--pc-texto);
+  --bs-secondary-color: var(--pc-texto-suave);
+  --bs-secondary-bg: var(--pc-superficie-2);
+  --bs-secondary-bg-rgb: 230, 237, 239;
+  --bs-tertiary-bg: #edf2f3;
+  --bs-tertiary-bg-rgb: 237, 242, 243;
+  --bs-border-color: var(--pc-borde);
+  --bs-border-color-translucent: rgba(15, 37, 51, 0.12);
+  --bs-border-radius: 0.375rem;
+  --bs-border-radius-sm: 0.25rem;
+  --bs-border-radius-lg: 0.625rem;
+
+  --bs-primary: var(--pc-mar);
+  --bs-primary-rgb: 11, 82, 119;
+  --bs-primary-text-emphasis: var(--pc-mar-texto);
+  --bs-primary-bg-subtle: var(--pc-mar-suave);
+  --bs-primary-border-subtle: #b2cfdd;
+  --bs-secondary-text-emphasis: #354c58;
+  --bs-secondary-bg-subtle: #e9eef0;
+  --bs-secondary-border-subtle: #c3d0d5;
+  --bs-success: var(--pc-exito);
+  --bs-success-rgb: 29, 111, 95;
+  --bs-success-text-emphasis: #145145;
+  --bs-success-bg-subtle: var(--pc-exito-suave);
+  --bs-success-border-subtle: #a9d6cb;
+  --bs-danger: var(--pc-peligro);
+  --bs-danger-rgb: 180, 35, 47;
+  --bs-danger-text-emphasis: var(--pc-peligro-texto);
+  --bs-danger-bg-subtle: var(--pc-peligro-suave);
+  --bs-danger-border-subtle: #ebb0b5;
+  --bs-warning: var(--pc-boya);
+  --bs-warning-rgb: 232, 97, 26;
+  --bs-warning-text-emphasis: var(--pc-boya-texto);
+  --bs-warning-bg-subtle: var(--pc-boya-suave);
+  --bs-warning-border-subtle: var(--pc-boya-borde);
+  --bs-info: var(--pc-info);
+  --bs-info-rgb: 14, 110, 140;
+  --bs-info-text-emphasis: #0a5069;
+  --bs-info-bg-subtle: #def0f6;
+  --bs-info-border-subtle: #a8d3e2;
+
+  --bs-code-color: var(--pc-mar-texto);
+  --bs-link-color: var(--pc-mar);
+  --bs-link-color-rgb: 11, 82, 119;
+  --bs-link-hover-color: var(--pc-mar-hover);
+  --bs-link-hover-color-rgb: 8, 63, 92;
+  --bs-focus-ring-color: rgba(11, 82, 119, 0.3);
+  --bs-form-valid-color: var(--pc-exito);
+  --bs-form-valid-border-color: var(--pc-exito);
+  --bs-form-invalid-color: var(--pc-peligro);
+  --bs-form-invalid-border-color: var(--pc-peligro);
+}
+
+[data-bs-theme='dark'] {
+  color-scheme: dark;
+  --pc-fondo: #071620;
+  --pc-superficie: #0d2230;
+  --pc-superficie-2: #12293a;
+  --pc-superficie-3: #1a3448;
+  --pc-texto: #e3edf0;
+  --pc-texto-suave: #9fb6c0;
+  --pc-texto-tenue: #86a0ab;
+  --pc-borde: #1c3547;
+  --pc-borde-fuerte: #2c4a5f;
+
+  --pc-mar: #6cc3e8;
+  --pc-mar-hover: #92d4f0;
+  --pc-mar-rgb: 108, 195, 232;
+  --pc-mar-suave: #10334a;
+  --pc-mar-texto: #a9dcf2;
+  --pc-sobre-mar: #04131c;
+
+  --pc-boya: #ff8c47;
+  --pc-boya-rgb: 255, 140, 71;
+  --pc-boya-texto: #ffb27f;
+  --pc-boya-suave: #3a2112;
+  --pc-boya-borde: #6b3a1c;
+
+  --pc-profundo: #0a3047;
+  --pc-profundo-texto: #e3edf0;
+  --pc-profundo-suave: #a7c3cf;
+  --pc-isobata: rgba(167, 214, 233, 0.22);
+
+  --pc-arena: #2a2a20;
+  --pc-arena-borde: #4a4632;
+  --pc-arena-texto: #d6c99f;
+
+  --pc-riel: #04111a;
+  --pc-riel-texto: #e3edf0;
+  --pc-riel-suave: #93abb6;
+  --pc-riel-borde: rgba(255, 255, 255, 0.07);
+
+  --pc-exito: #5cc6ad;
+  --pc-exito-suave: #0f2f2a;
+  --pc-info: #6fc9e3;
+  --pc-peligro: #f2877c;
+  --pc-peligro-hover: #f6a59c;
+  --pc-peligro-texto: #f7b3ab;
+  --pc-peligro-suave: #3a1717;
+
+  --pc-sombra-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --pc-sombra-2: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 30px -14px rgba(0, 0, 0, 0.75);
+  --pc-sombra-3: 0 2px 6px rgba(0, 0, 0, 0.4), 0 28px 64px -24px rgba(0, 0, 0, 0.9);
+  --pc-velo: rgba(1, 8, 13, 0.64);
+
+  --bs-body-bg: var(--pc-fondo);
+  --bs-body-bg-rgb: 7, 22, 32;
+  --bs-body-color: var(--pc-texto);
+  --bs-body-color-rgb: 227, 237, 240;
+  --bs-emphasis-color: #ffffff;
+  --bs-heading-color: var(--pc-texto);
+  --bs-secondary-color: var(--pc-texto-suave);
+  --bs-secondary-bg: var(--pc-superficie-2);
+  --bs-secondary-bg-rgb: 18, 41, 58;
+  --bs-tertiary-bg: #0b1e2b;
+  --bs-tertiary-bg-rgb: 11, 30, 43;
+  --bs-border-color: var(--pc-borde);
+  --bs-border-color-translucent: rgba(227, 237, 240, 0.12);
+
+  --bs-primary: var(--pc-mar);
+  --bs-primary-rgb: 108, 195, 232;
+  --bs-primary-text-emphasis: var(--pc-mar-texto);
+  --bs-primary-bg-subtle: var(--pc-mar-suave);
+  --bs-primary-border-subtle: #1f4f6c;
+  --bs-secondary-text-emphasis: #c2d3da;
+  --bs-secondary-bg-subtle: #16303f;
+  --bs-secondary-border-subtle: #2c4a5f;
+  --bs-success: var(--pc-exito);
+  --bs-success-rgb: 92, 198, 173;
+  --bs-success-text-emphasis: #9fe0cf;
+  --bs-success-bg-subtle: var(--pc-exito-suave);
+  --bs-success-border-subtle: #1f5248;
+  --bs-danger: var(--pc-peligro);
+  --bs-danger-rgb: 242, 135, 124;
+  --bs-danger-text-emphasis: var(--pc-peligro-texto);
+  --bs-danger-bg-subtle: var(--pc-peligro-suave);
+  --bs-danger-border-subtle: #5e2b29;
+  --bs-warning: var(--pc-boya);
+  --bs-warning-rgb: 255, 140, 71;
+  --bs-warning-text-emphasis: var(--pc-boya-texto);
+  --bs-warning-bg-subtle: var(--pc-boya-suave);
+  --bs-warning-border-subtle: var(--pc-boya-borde);
+  --bs-info: var(--pc-info);
+  --bs-info-rgb: 111, 201, 227;
+  --bs-info-text-emphasis: #b2e3f1;
+  --bs-info-bg-subtle: #0f2f3d;
+  --bs-info-border-subtle: #22566b;
+
+  --bs-code-color: var(--pc-mar-texto);
+  --bs-link-color: var(--pc-mar);
+  --bs-link-color-rgb: 108, 195, 232;
+  --bs-link-hover-color: var(--pc-mar-hover);
+  --bs-link-hover-color-rgb: 146, 212, 240;
+  --bs-focus-ring-color: rgba(108, 195, 232, 0.35);
+  --bs-form-valid-color: var(--pc-exito);
+  --bs-form-valid-border-color: var(--pc-exito);
+  --bs-form-invalid-color: var(--pc-peligro);
+  --bs-form-invalid-border-color: var(--pc-peligro);
+}
