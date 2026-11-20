@@ -2,119 +2,117 @@
 
 ```text
 PescaControl/
-├── .github/
-│   ├── ISSUE_TEMPLATE/        Plantillas de issues (tarea, bug)
-│   ├── workflows/ci.yml       CI: autoría + lint + formato + build en cada PR
-│   └── pull_request_template.md
+├── .github/                   Plantillas de issues y PR; CI (autoría, lint, formato, typecheck, pruebas, build)
 ├── docs/
-│   ├── capturas/              Capturas de pantalla para la entrega (#24)
-│   ├── informe/informe.html   Fuente editable del informe (#25)
-│   ├── PescaControl_PC3.pdf   Informe de entrega (#25)
+│   ├── capturas/              Capturas de pantalla para la entrega
+│   ├── informe/informe.html   Fuente editable del informe
+│   ├── PescaControl_PC3.pdf   Informe de entrega
 │   └── ENTREGA.md             Guía de la entrega
 ├── public/favicon.svg         Boya sobre olas
+├── server/                    API: Express + TypeScript (#37, #38)
+│   ├── index.ts               Arranque: valida la configuración y escucha en API_PORT
+│   ├── app.ts                 crearApp(): middlewares, rutas y manejo de errores (sin listen, para pruebas)
+│   ├── config.ts              Variables de entorno validadas con zod
+│   ├── sesion.ts              JWT y cookie httpOnly pc_sesion
+│   ├── validacion.ts          Validación de cuerpos con zod → 400 { error, campos }
+│   ├── errores.ts             ErrorHttp y mensajes comunes
+│   ├── seed.ts                Crea los usuarios de demostración (npm run seed)
+│   ├── almacen/usuarios.ts    Lectura/escritura atómica de usuarios; nunca expone el hash
+│   ├── middleware/            autenticar (relee el usuario en cada petición), autorizar(rol), errores
+│   ├── rutas/                 auth, usuarios, publico y desembarques (json-server protegido)
+│   ├── tipos/                 Tipos auxiliares (res.locals, json-server)
+│   ├── data/usuarios.json     Usuarios (separado de db.json, nunca expuesto por json-server)
+│   └── tests/                 Vitest + Supertest: 66 pruebas de la API
 ├── src/
-│   ├── components/            Piezas reutilizables, sin lógica de página
-│   │   ├── Header.jsx         Cabecera: título de la app, migas y buscador Ctrl+K (#1)
-│   │   ├── Marca.jsx          Sello y nombre de la marca (#1)
-│   │   ├── Navbar.jsx         Barra lateral y barra inferior móvil con NavLink (#3)
-│   │   ├── Footer.jsx         Pie de página (#4)
-│   │   ├── EstadoVacio.jsx    Estados vacío y sin resultados con ilustraciones propias (#4)
-│   │   ├── Esqueleto.jsx      Esqueletos de carga (#4)
-│   │   ├── DesembarqueForm.jsx Formulario controlado reutilizable vía props (#5, #12, #13, #19)
-│   │   ├── AlertMessage.jsx   Mensajes de éxito/error; también dentro de los toasts (#15)
-│   │   ├── Loading.jsx        Indicador "Loading..." (#16)
-│   │   ├── TablaDesembarques.jsx Tabla ordenable con selección múltiple (#16, #21)
-│   │   ├── Graficos.jsx       Composición por especie y carta del litoral por puerto (#11)
-│   │   ├── PaletaComandos.jsx Paleta de comandos Ctrl+K (#17)
-│   │   ├── AyudaAtajos.jsx    Ayuda de atajos de teclado (#17)
-│   │   ├── Tecla.jsx          Representación de una tecla (#17)
-│   │   ├── Modal.jsx          Base de modales: portal, Esc, foco y bloqueo de scroll (#20)
-│   │   ├── ConfirmModal.jsx   Confirmación de eliminación (#20)
-│   │   ├── Drawer.jsx         Panel lateral accesible (#20)
-│   │   ├── LoginModal.jsx     Inicio de sesión simulado (#20)
-│   │   ├── TarjetaDesembarque.jsx Tarjeta de la vista de tarjetas y vista previa (#21)
-│   │   ├── DetalleDesembarque.jsx Contenido del panel de detalle (#21)
-│   │   ├── InsigniaEspecie.jsx Insignia con el color de la especie (#21)
-│   │   └── InsigniaEstado.jsx Badge del estado con ícono (#16)
-│   ├── pages/                 Una por ruta
-│   │   ├── Home.jsx           "/"              Panel de operaciones (#11)
-│   │   ├── Registro.jsx       "/registro" y "/registro/:id" (#5, #18)
-│   │   ├── Lista.jsx          "/lista"         Tabla/tarjetas, filtros en la URL (#16, #21, #22)
-│   │   └── NotFound.jsx       "*"              (#9)
+│   ├── main.tsx               Punto de entrada: Bootstrap, Router y proveedores
+│   ├── App.tsx                Rutas públicas y protegidas (#42)
+│   ├── index.css              Tokens de diseño claro/oscuro
+│   ├── styles/                base, shell, capas, especies, vistas, escena, acceso y publico
+│   ├── pages/
+│   │   ├── Principal.tsx      "/"               Página principal pública animada (#41)
+│   │   ├── Ingresar.tsx       "/ingresar"       Inicio de sesión (#40)
+│   │   ├── CrearCuenta.tsx    "/crear-cuenta"   Registro de cuenta (#40)
+│   │   ├── Panel.tsx          "/panel"          Panel de operaciones (#11)
+│   │   ├── Registro.tsx       "/registro" y "/registro/:id" (#5, #18)
+│   │   ├── Lista.tsx          "/lista"          Tabla/tarjetas, filtros en la URL (#16, #21, #22)
+│   │   ├── Usuarios.tsx       "/usuarios"       Gestión de usuarios, solo Jefe (#43)
+│   │   └── NotFound.tsx       "*"               (#9)
+│   ├── components/
+│   │   ├── LayoutApp.tsx      Shell del sistema: navegación, cabecera, contenido y pie (#42)
+│   │   ├── RutaProtegida.tsx  Exige sesión (y rol); SoloInvitado para las páginas de acceso (#39)
+│   │   ├── Permiso.tsx        Muestra su contenido solo al rol indicado (#44)
+│   │   ├── InsigniaRol.tsx    Insignia Operador/Jefe (#42)
+│   │   ├── Header.tsx         Título de la app, migas y buscador Ctrl+K (#1)
+│   │   ├── Navbar.tsx         Barra lateral y barra móvil con NavLink, usuario y rol (#3, #42)
+│   │   ├── DesembarqueForm.tsx Formulario controlado reutilizable vía props (#5, #12, #13, #19)
+│   │   ├── TablaDesembarques.tsx, TarjetaDesembarque.tsx, DetalleDesembarque.tsx
+│   │   ├── AlertMessage.tsx, Loading.tsx, Modal.tsx, ConfirmModal.tsx, Drawer.tsx
+│   │   ├── PaletaComandos.tsx, AyudaAtajos.tsx, Tecla.tsx, Graficos.tsx
+│   │   ├── Marca.tsx, Footer.tsx, EstadoVacio.tsx, Esqueleto.tsx, InsigniaEspecie.tsx, InsigniaEstado.tsx
+│   │   ├── acceso/            LayoutAcceso, PanelMarino, CampoContrasena, MedidorFortaleza (#40)
+│   │   ├── escena/Escena.tsx  Ola, Boya, Embarcacion, CartaIsobatas (#40, #41)
+│   │   └── principal/         Secciones de la página principal: BarraPublica, Portada, Problema,
+│   │                          ComoFunciona, Modulos, CifrasEnVivo, Contador, CartaLitoral, Roles, Cierre (#41)
 │   ├── context/
-│   │   ├── AppContext.jsx     Estado global: usuario, tema, configuración (#6)
-│   │   ├── ShellProvider.jsx  Paneles abiertos y navegación protegida (#20)
-│   │   ├── ToastProvider.jsx  Notificaciones tipo toast (#15)
-│   │   └── contextos.js       Definición de los contextos del shell y los toasts
-│   ├── hooks/
-│   │   ├── useLocalStorage.js Custom hook de persistencia (#14)
-│   │   ├── useShell.js        Acceso al estado del shell (#20)
-│   │   ├── useToast.js        Mostrar toasts (#15)
-│   │   ├── useCapaModal.js    Foco atrapado, Esc y bloqueo de scroll en capas (#20)
-│   │   ├── useAtajosTeclado.js Atajos globales (N, /, G+I/L/R, ?) (#17)
-│   │   ├── useConteoOperaciones.js Contadores de la barra lateral (#3)
-│   │   └── useGuardiaCambios.js Aviso al salir con cambios sin guardar (#18)
+│   │   ├── AppContext.tsx     Sesión real, tema y configuración (#39)
+│   │   ├── ShellProvider.tsx  Paneles abiertos y navegación protegida
+│   │   ├── ToastProvider.tsx  Notificaciones tipo toast
+│   │   └── contextos.ts       Definición de los contextos
+│   ├── hooks/                 useLocalStorage (#14), useCerrarSesion, useShell, useToast, useCapaModal,
+│   │                          useAtajosTeclado, useConteoOperaciones, useGuardiaCambios
 │   ├── services/
-│   │   └── apiService.js      Único lugar que habla con la API (#8)
-│   ├── constants/
-│   │   └── desembarques.js    Especies, artes, puertos, destinos, estados y patrones (#5)
-│   ├── utils/
-│   │   ├── validarDesembarque.js Validación y normalización (#12)
-│   │   ├── formato.js         Formato de soles, toneladas y fechas (#8)
-│   │   ├── operaciones.js     Resumen, filtros y orden de desembarques (#11, #22)
-│   │   └── colores.js         Colores por especie y estado, contraste (#21)
-│   ├── styles/                base, shell, capas, especies y vistas (importados desde index.css)
-│   ├── App.jsx                Shell de la app + definición de rutas (#1)
-│   ├── main.jsx               Punto de entrada: Bootstrap, Router y proveedores
-│   └── index.css              Tokens de diseño claro/oscuro (#2)
-├── db.json                    "Base de datos" de json-server (#7)
-├── .env.example               VITE_API_URL
-├── package.json               Dependencias y scripts
-└── *.md                       Documentación (README, PROYECTO, PRODUCT, DESIGN, ESTRUCTURA, CONTRIBUTING, SPRINTS, AGENTS)
+│   │   ├── http.ts            Cliente axios común (cookie, ErrorApi, aviso de sesión expirada)
+│   │   ├── apiService.ts      Desembarques (#8)
+│   │   ├── authService.ts     Registro, ingreso, salida y sesión (#39)
+│   │   ├── usuariosService.ts Gestión de usuarios (#43)
+│   │   └── publicoService.ts  Cifras de la página principal (#41)
+│   ├── types/                 Tipos del dominio, usuario, API, contextos y operaciones (#33)
+│   ├── constants/desembarques.ts  Catálogos y patrones (también los usa el servidor)
+│   └── utils/                 validarDesembarque (compartida con el servidor), validarCuenta, formato,
+│                              operaciones, colores, sesion, errores y erroresAcceso
+├── db.json                    Desembarques (servidos por json-server detrás del servidor)
+├── .env.example               Variables de entorno (copiar a .env)
+├── tsconfig*.json             TypeScript: app, node (vite.config) y server
+├── vite.config.ts             Proxy /api → servidor
+├── vitest.config.ts           Pruebas de la API
+└── *.md                       Documentación
 ```
 
-> La práctica nombra los archivos como `App.js`, `Navbar.js`, etc. En Vite los componentes con JSX usan la extensión `.jsx`; el contenido y propósito son los mismos.
+> La práctica nombra los archivos como `App.js`, `Navbar.js`, etc. El proyecto usa **TypeScript**: los componentes con JSX son `.tsx` y el resto `.ts`; el propósito de cada archivo es el mismo.
 
 ## Responsabilidad de cada carpeta
 
 | Carpeta | Puede | No debe |
 |---|---|---|
-| `components/` | Recibir datos por `props`, emitir eventos (`onSubmit`, `onConfirm`, `onClose`) | Llamar a la API directamente |
-| `pages/` | Usar hooks, llamar a `apiService`, leer el contexto, componer componentes | Contener estilos complejos repetidos (extraer a componente) |
-| `context/` | Guardar estado global compartido | Guardar la lista de desembarques (eso vive en las páginas) |
-| `hooks/` | Lógica reutilizable con hooks (`useX`) | Renderizar JSX |
-| `services/` | Peticiones HTTP con Axios y traducción de errores | Usar hooks o tocar el DOM |
-| `utils/`, `constants/` | Funciones puras y catálogos | Depender de React |
+| `server/` | Autenticar, autorizar por rol, validar y guardar datos | Confiar en datos o roles enviados por el navegador |
+| `src/components/` | Recibir datos por `props`, emitir eventos (`onSubmit`, `onConfirm`, `onClose`) | Llamar a la API directamente |
+| `src/pages/` | Usar hooks, llamar a los servicios, leer el contexto, componer componentes | Contener estilos complejos repetidos |
+| `src/context/` | Guardar estado global (sesión, tema) | Guardar el token (vive en una cookie httpOnly) |
+| `src/hooks/` | Lógica reutilizable con hooks (`useX`) | Renderizar JSX |
+| `src/services/` | Peticiones HTTP con Axios y traducción de errores | Usar hooks o tocar el DOM |
+| `src/utils/`, `src/constants/` | Funciones puras y catálogos (compartidos con el servidor) | Depender de React |
 
-## Flujo de datos
+## Flujo de datos y sesión
 
 ```text
-        ┌──────────────┐   useAppContext()   ┌───────────────────────────┐
-        │  AppContext  │ ──────────────────▶ │ Navbar / Header / páginas │
-        │ usuario/tema │ ◀── useLocalStorage │                           │
-        └──────────────┘                     │  Home   Registro   Lista  │
-                                             └─────────────┬─────────────┘
-                                                           │ getAll/add/update/remove
-                                                           ▼
-                                             ┌───────────────────────────┐
-                                             │   services/apiService     │ (Axios)
-                                             └─────────────┬─────────────┘
-                                                           │ HTTP
-                                                           ▼
-                                             ┌───────────────────────────┐
-                                             │ json-server :3001         │ ◀─ db.json
-                                             └───────────────────────────┘
+ Navegador (React)                                  Servidor (Express :3001)
+ ┌───────────────────────────┐   /api (proxy Vite)   ┌───────────────────────────────────┐
+ │ AppContext  ──obtenerSesion──────────────────────▶ │ /auth  bcrypt + JWT en cookie     │
+ │ páginas ── servicios (axios, withCredentials) ───▶ │ autenticar → autorizar(rol)       │
+ │                                                    │ /desembarques → json-server ◀ db.json
+ │ ◀── 401 → evento "sesión expirada" → /ingresar ── │ /usuarios (Jefe) ◀ usuarios.json  │
+ └───────────────────────────┘                       └───────────────────────────────────┘
 ```
 
-1. Una página monta → `useEffect` llama a `apiService.getAll()` → muestra `<Loading />` (o esqueletos) mientras espera.
-2. El usuario envía el formulario → `validarDesembarque` → `apiService.add()` / `update()` → toast con `AlertMessage`.
-3. Tras crear, editar o eliminar se avisa con `avisarCambioOperaciones()` para refrescar los contadores de la barra lateral.
-4. Tema y usuario se leen desde `AppContext`, que los persiste con `useLocalStorage`.
+1. Al abrir la app, `AppContext` pide `/api/auth/sesion`. Mientras tanto, `RutaProtegida` muestra `Loading...`.
+2. Al ingresar, el servidor verifica la contraseña con bcrypt y responde con una cookie `httpOnly`. El navegador la envía sola en cada petición y el código nunca la lee.
+3. En cada petición, el servidor relee al usuario y su rol. Si la acción no está permitida responde 403, y la interfaz ya oculta esas acciones.
+4. Si una petición responde 401, el cliente avisa y la app vuelve a `/ingresar?volver=…`.
 
 ## Convenciones de nombres
 
-- Componentes y páginas: `PascalCase.jsx` (`DesembarqueForm.jsx`).
-- Hooks: `useAlgo.js` (`useLocalStorage.js`).
-- Funciones y variables: `camelCase` en español (`desembarqueInicial`, `cargarDesembarques`).
-- Rutas: minúsculas en español (`/registro`, `/lista`).
-- Claves de `localStorage`: `pescacontrol:<dato>`.
+- Componentes y páginas: `PascalCase.tsx` (`DesembarqueForm.tsx`).
+- Hooks: `useAlgo.ts` (`useLocalStorage.ts`).
+- Funciones y variables: `camelCase` en español (`desembarqueInicial`, `iniciarSesion`).
+- Rutas: minúsculas en español (`/registro`, `/crear-cuenta`).
+- Claves de `localStorage`: `pescacontrol:<dato>` (nunca datos de sesión).

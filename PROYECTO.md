@@ -7,17 +7,22 @@ Desarrollar una aplicación web con React, Bootstrap y servicios REST que permit
 ## Alcance
 
 **Incluye**
-- 3 páginas principales: **Inicio** (panel de operaciones), **Registro** y **Lista** de desembarques (+ página 404).
-- CRUD completo de desembarques contra json-server (`db.json`).
+- **Página principal pública** (Home) que explica el sistema, y páginas para **ingresar** y **crear cuenta**.
+- Páginas del sistema (con sesión): **Panel** de operaciones, **Registro** y **Lista** de desembarques, **Usuarios** (solo Jefe) y página 404.
+- CRUD completo de desembarques contra json-server (`db.json`), servido detrás de un servidor Express con autenticación.
+- **Autenticación real**: contraseñas cifradas con bcrypt, sesión con JWT en una cookie `httpOnly`, límite de intentos y **roles** (Operador y Jefe).
 - Indicadores de operación: toneladas desembarcadas, valor desembarcado, desembarques que requieren atención, toneladas por especie y por puerto.
-- Contexto global: usuario autenticado (simulado), tema claro/oscuro y configuración.
+- Contexto global: usuario autenticado, tema claro/oscuro y configuración.
 - Custom hook `useLocalStorage` para persistir preferencias y borradores.
 - Indicador `Loading...` y mensajes de confirmación/error.
+- Código en **TypeScript** estricto y pruebas automáticas de la API (Vitest + Supertest).
 
 **No incluye**
-- Backend real, base de datos ni autenticación real (el login es simulado).
+- Base de datos relacional ni despliegue en producción (los datos viven en archivos JSON).
+- Recuperación de contraseña por correo ni verificación de correo.
 - Registro de tripulación, zarpes, cuotas de pesca ni facturación.
-- TypeScript, librerías de UI distintas de Bootstrap, ni tests automatizados obligatorios.
+
+> **Sobre TypeScript y seguridad.** TypeScript agrega **tipado estático**: detecta errores antes de ejecutar y hace el código más fácil de mantener, pero en el navegador todo termina siendo JavaScript. La **seguridad** del sistema la da el servidor: contraseñas cifradas, sesión en cookie `httpOnly`, verificación del rol en cada petición, validación de los datos y límite de intentos.
 
 ## Modelo de datos: `Desembarque`
 
@@ -60,17 +65,81 @@ Ejemplo:
 
 Prefijos de capitanía por puerto (referenciales): Paita `PT`, Chimbote `CE`, Callao `CO`, Pisco `PS`, Ilo `IO`.
 
-## API REST (json-server)
+## Modelo de datos: `Usuario`
 
-Base: `http://localhost:3001` (configurable con `VITE_API_URL`).
+Se guarda en `server/data/usuarios.json` (separado de `db.json`, nunca expuesto por json-server). La API nunca devuelve la contraseña ni su hash.
 
-| Método | Endpoint | Función en `apiService.js` | Descripción |
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | string | UUID generado por el servidor |
+| `nombre` | string | 2–60 caracteres |
+| `correo` | string | Correo válido y único (se guarda en minúsculas) |
+| `rol` | string | `operador` o `jefe` |
+| `activo` | boolean | Una cuenta desactivada no puede ingresar |
+| `creadoEn` | string | Fecha y hora ISO 8601 |
+| `hash` | string | Solo en el servidor: contraseña cifrada con bcrypt (coste 12) |
+
+Contraseña: 8–72 caracteres con al menos una letra y un número.
+
+### Roles
+
+| Acción | Operador | Jefe |
+|---|---|---|
+| Ver panel y desembarques | ✅ | ✅ |
+| Registrar y editar desembarques | ✅ | ✅ |
+| Eliminar desembarques (individual y en lote) | — | ✅ |
+| Gestionar usuarios (cambiar rol, activar/desactivar) | — | ✅ |
+
+- La **primera cuenta** creada en el sistema es Jefe; las siguientes son Operador hasta que un Jefe las promueva.
+- Siempre debe quedar al menos un Jefe activo, y un Jefe no puede desactivarse ni quitarse el rol a sí mismo.
+- El servidor vuelve a leer el rol del usuario en cada petición: un cambio de rol o una desactivación se aplica al instante.
+
+## API REST
+
+El navegador habla solo con `/api` (en desarrollo, Vite lo redirige al servidor Express en el puerto 3001). Los errores siempre llegan como `{ "error": "mensaje", "campos": { ... } }`.
+
+### Autenticación (`src/services/authService.ts`)
+
+| Método | Endpoint | Función | Respuestas |
 |---|---|---|---|
-| GET | `/desembarques` | `getAll()` | Obtener todos los desembarques |
-| GET | `/desembarques/:id` | `getById(id)` | Obtener un desembarque (modo edición) |
-| POST | `/desembarques` | `add(desembarque)` | Registrar un desembarque |
-| PUT | `/desembarques/:id` | `update(id, desembarque)` | Actualizar un desembarque |
-| DELETE | `/desembarques/:id` | `remove(id)` | Eliminar un desembarque |
+| POST | `/api/auth/registro` | `registrarse(datos)` | 201 + cookie · 400 datos inválidos · 409 correo repetido · 429 demasiados intentos |
+| POST | `/api/auth/ingreso` | `iniciarSesion(credenciales)` | 200 + cookie · 401 credenciales incorrectas · 403 cuenta desactivada · 429 |
+| POST | `/api/auth/salida` | `cerrarSesion()` | 204, borra la cookie |
+| GET | `/api/auth/sesion` | `obtenerSesion()` | 200 con el usuario · 401 sin sesión |
+
+### Desembarques (`src/services/apiService.ts`, json-server detrás de la autenticación)
+
+| Método | Endpoint | Función | Rol |
+|---|---|---|---|
+| GET | `/api/desembarques` | `getAll()` | Operador y Jefe |
+| GET | `/api/desembarques/:id` | `getById(id)` | Operador y Jefe |
+| POST | `/api/desembarques` | `add(desembarque)` | Operador y Jefe |
+| PUT | `/api/desembarques/:id` | `update(id, desembarque)` | Operador y Jefe |
+| DELETE | `/api/desembarques/:id` | `remove(id)` | Solo Jefe (403 para Operador) |
+
+El servidor valida cada POST/PUT con las mismas reglas del formulario (`src/utils/validarDesembarque.ts`) y responde 400 con los errores por campo.
+
+### Usuarios (`src/services/usuariosService.ts`, solo Jefe)
+
+| Método | Endpoint | Función |
+|---|---|---|
+| GET | `/api/usuarios` | `listarUsuarios()` |
+| PATCH | `/api/usuarios/:id` | `actualizarUsuario(id, { rol?, activo? })` |
+
+### Público (`src/services/publicoService.ts`, sin sesión)
+
+| Método | Endpoint | Función |
+|---|---|---|
+| GET | `/api/publico/resumen` | `obtenerResumenPublico()`: solo cifras agregadas para la página principal |
+
+### Seguridad
+
+- **Contraseñas:** bcrypt con coste 12. El ingreso responde lo mismo y tarda lo mismo si el correo no existe.
+- **Sesión:** JWT HS256 de 8 h en la cookie `pc_sesion`, con `httpOnly` (el JavaScript del navegador no la puede leer), `SameSite=Strict` y `Secure` en HTTPS.
+- **Límite de intentos:** 5 ingresos fallidos y 5 registros por IP cada 15 minutos.
+- **Entrada:** validación con zod, cuerpo de 20 kB como máximo y cabeceras de seguridad con helmet.
+- **Errores:** nunca muestran detalles internos del servidor.
+- **Secretos:** `JWT_SECRET` vive en `.env`, que no se versiona.
 
 ## Trazabilidad: requisitos de la práctica → issues
 

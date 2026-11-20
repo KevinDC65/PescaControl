@@ -24,6 +24,8 @@ Escribe tu usuario de GitHub en la tabla del equipo la primera vez.
 | Sprint 2 | 25/11 – 29/11 | Validaciones, hooks, listado con REST y panel de Inicio |
 | Sprint 3 | 30/11 – 04/12 | Edición, paleta de comandos, capas, filtros y vista de tarjetas |
 | Entrega | 05/12 – 06/12 | Integración, capturas y PDF |
+| Sprint 4 | 07/12 – 10/12 | Migración a TypeScript estricto |
+| Sprint 5 | 11/12 – 17/12 | Autenticación con roles, página principal, gestión de usuarios y entrega v2 |
 
 ---
 
@@ -77,6 +79,39 @@ Escribe tu usuario de GitHub en la tabla del equipo la primera vez.
 | [x] | #23 | Dev 1 | Integración final y pruebas cruzadas |
 | [x] | #24 | Dev 2 | Capturas de pantalla |
 | [x] | #25 | Dev 4 | Documento PDF de entrega |
+
+
+## Sprint 4 · 07/12 – 10/12 (TypeScript)
+
+> Meta: todo el proyecto en TypeScript estricto, sin cambiar el comportamiento. Un solo PR coordinado porque renombra todos los archivos.
+
+| Estado | Issue | Dev | Tarea |
+|---|---|---|---|
+| [x] | #32 | Dev 1 | Configurar TypeScript estricto y `typecheck` en la CI |
+| [x] | #33 | Dev 5 | Tipos del dominio, servicios y utilidades en TypeScript |
+| [x] | #34 | Dev 4 | Contextos y hooks en TypeScript |
+| [x] | #35 | Dev 2 | Shell, navegación y panel en TypeScript |
+| [x] | #36 | Dev 3 | Formulario, registro y lista en TypeScript |
+
+## Sprint 5 · 11/12 – 17/12 (autenticación y página principal)
+
+> Meta: cuentas reales con roles, página principal pública y entrega actualizada.
+
+| Estado | Issue | Dev | Tarea |
+|---|---|---|---|
+| [x] | #37 | Dev 5 | Servidor Express: autenticación y json-server protegido |
+| [x] | #38 | Dev 5 | Pruebas automáticas de la API |
+| [x] | #39 | Dev 4 | Sesión real en el frontend y rutas protegidas |
+| [x] | #40 | Dev 3 | Páginas Ingresar y Crear cuenta |
+| [x] | #41 | Dev 2 | Página principal pública animada |
+| [x] | #42 | Dev 1 | Shell con sesión: rutas nuevas, usuario y rol |
+| [x] | #43 | Dev 4 | Gestión de usuarios (Jefe) |
+| [x] | #44 | Dev 3 | Permisos por rol en desembarques |
+| [x] | #45 | Dev 1 | Documentación v2 e instalación con `.env` |
+| [x] | #46 | Dev 2 | Capturas v2 |
+| [x] | #47 | Dev 4 | Informe PDF v2 con seguridad y autenticación |
+
+> Las piezas del Sprint 5 dependen entre sí (la sesión la usan la navegación, el acceso, la página principal y la gestión de usuarios), así que el código se integra en un solo PR y la documentación en otro.
 
 ---
 

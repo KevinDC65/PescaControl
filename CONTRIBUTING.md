@@ -46,6 +46,8 @@ Commits pequeños y frecuentes. Nada de `"cambios"` o `"avance"`.
 - Antes de abrir el PR, en local:
   ```bash
   npm run lint
+  npm run typecheck
+  npm test
   npm run format
   npm run build
   ```
@@ -65,17 +67,18 @@ Cada rol es dueño de ciertos archivos (ver tabla en [SPRINTS.md](SPRINTS.md#res
 ## 6. Estilo de código
 
 - Solo **componentes funcionales** y hooks. Nada de clases.
-- **JavaScript** (no TypeScript). Extensión `.jsx` para archivos con JSX.
+- **TypeScript estricto** (`strict`, sin `any`; si algo es incierto, `unknown` y estrechamiento). Extensión `.tsx` para archivos con JSX y `.ts` para el resto. `npm run typecheck` debe pasar.
 - Estilos: **clases de Bootstrap primero**; CSS propio solo en `src/index.css` (tokens) y `src/styles/*.css`, usando las variables definidas en [DESIGN.md](DESIGN.md).
 - Textos de la interfaz, nombres de variables y commits **en español**.
-- La API solo se llama desde `services/apiService.js`. Los componentes nunca usan `axios`/`fetch` directo.
+- La API solo se llama desde `src/services/` (`apiService.ts`, `authService.ts`, `usuariosService.ts`, `publicoService.ts`). Los componentes nunca usan `axios`/`fetch` directo.
+- Toda regla de permisos se aplica en el **servidor**; la interfaz solo oculta lo que el rol no puede hacer.
 - Nada de `console.log` en el PR final (sí `console.error` para errores reales).
 - Formato automático con Prettier (`npm run format`).
 
 ## 7. Definition of Done (cuándo una issue está terminada)
 
 - [ ] Cumple todos los criterios de aceptación de la issue.
-- [ ] Lint, formato y build pasan.
+- [ ] Lint, typecheck, pruebas (`npm test`), formato y build pasan.
 - [ ] Probado en el navegador con `npm run dev:all`, sin errores en consola.
 - [ ] Se ve bien en móvil (ancho ~375 px) y escritorio.
 - [ ] PR aprobado y fusionado; la issue se cerró sola.
