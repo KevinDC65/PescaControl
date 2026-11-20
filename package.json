@@ -10,8 +10,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "oxlint",
-    "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\""
+    "typecheck": "tsc -b --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" vite.config.ts",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" vite.config.ts"
   },
   "dependencies": {
     "axios": "^1.21.1",
@@ -22,6 +23,7 @@
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
+    "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
@@ -29,6 +31,7 @@
     "json-server": "^0.17.4",
     "oxlint": "^1.90.0",
     "prettier": "^3.10.1",
+    "typescript": "^7.0.2",
     "vite": "^8.3.6"
   },
   "description": "PescaControl: sistema de gestión de operaciones pesqueras y desembarque (React + Vite + Bootstrap + json-server)",
